@@ -18,14 +18,21 @@ classdef KalmanFilter
     end
     
     methods
-        function [predicted_state, predicted_covariance] = predict(o)
-            o.predicted_state = o.A * o.state;
-            o.predicted_covariance = o.A * o.covariance * o.A' + o.Q;
-            predicted_state = o.predicted_state;
-            predicted_covariance = o.predicted_covariance;
+        function o = KalmanFilter(A, C, Q, R, initial_state)
+            o.A = A;
+            o.C = C;
+            o.Q = Q;
+            o.R = R;
+            o.state = initial_state;
+            o.covariance = Q;
         end
         
-        function update(o, observation)
+        function o = predict(o)
+            o.predicted_state = o.A * o.state;
+            o.predicted_covariance = o.A * o.covariance * o.A' + o.Q;
+        end
+        
+        function o = update(o, observation)
             o.kalman_gain = o.predicted_covariance * o.C' * inv(o.C * o.predicted_covariance * o.C' + o.R);
             o.state = o.predicted_state + o.kalman_gain * (observation - o.C * o.predicted_state);
             o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;
