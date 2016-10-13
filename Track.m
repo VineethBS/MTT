@@ -15,6 +15,14 @@ classdef Track
             o.gate_parameters = gate_parameters;
             o.track_maintenance_parameters = track_maintenance_parameters;
         end
+        
+        function o = predict(o)
+            o.kalman_filter = o.kalman_filter.predict();
+        end
+        
+        function o = update(o, observation)
+            o.kalman_filter = o.kalman_filter.update(observation);
+        end
     end
     
 end
