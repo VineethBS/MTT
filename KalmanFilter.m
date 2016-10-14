@@ -37,6 +37,10 @@ classdef KalmanFilter
             o.state = o.predicted_state + o.kalman_gain * (observation - o.C * o.predicted_state);
             o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;
         end
+        
+        function predicted_observation = get_observation(o)
+            predicted_observation = o.C * o.state;
+        end
     end
     
 end
