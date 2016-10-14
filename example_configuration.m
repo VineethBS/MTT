@@ -12,11 +12,15 @@ filter_parameters.A = [1 dt dt^2
                        0 0 1];
                    
 filter_parameters.C = [1 0 0];
+
 filter_parameters.Q = [1 0 0;
                        0 1 0;
                        0 0 1];
                    
 filter_parameters.R = 1;
+
+filter_parameters.rest_of_initial_state = [0
+                                           0];
 
 gating_method_type = 'Rectangular';
 gating_method_parameters.gate_width = 1;
