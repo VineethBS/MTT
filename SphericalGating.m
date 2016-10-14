@@ -6,8 +6,8 @@ classdef SphericalGating
     end
     
     methods
-        function o = RectangularGating(gate_width)
-            o.gate_width = gate_width;
+        function o = RectangularGating(parameters)
+            o.gate_radius = parameters.gate_radius;
         end
         
         function gate_membership_matrix = find_gate_membership(o, observations, list_of_tracks)

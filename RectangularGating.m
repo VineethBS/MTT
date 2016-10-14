@@ -6,8 +6,8 @@ classdef RectangularGating
     end
     
     methods
-        function o = RectangularGating(gate_width)
-            o.gate_width = gate_width;
+        function o = RectangularGating(parameters)
+            o.gate_width = parameters.gate_width;
         end
         
         function gate_membership_matrix = find_gate_membership(o, observations, list_of_tracks)
