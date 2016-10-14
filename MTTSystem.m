@@ -57,7 +57,7 @@ classdef MTTSystem
                     observations{i} = observation_matrix(:, i);
                 end
                 
-                o.MTT = o.MTT.process_one_observation(observations);
+                o.MTT = o.MTT.process_one_observation(time, observations);
             end
         end
     end
