@@ -6,6 +6,8 @@ classdef MultiTargetTracker
         gating_method_type;
         data_association_type;
         
+        filter_parameters;
+        
         gating;
         data_association;
         
@@ -14,10 +16,14 @@ classdef MultiTargetTracker
     end
     
     methods
-        function o = MultiTargetTracker(filter_type, gating_method_type, gating_method_parameters, data_association_type, data_association_parameters)
+        function o = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
+                                        data_association_type, data_association_parameters)
+                                        
             o.filter_type = filter_type;
             o.gating_method_type = gating_method_type;
             o.data_association_type = data_association_type;
+            
+            o.filter_parameters = filter_parameters;
             
             o.list_of_tracks = [];
             o.list_of_non_active_tracks = [];
@@ -40,7 +46,7 @@ classdef MultiTargetTracker
         o = predict_new_positions(o);
         gate_membership_matrix = find_gate_membership(o, observations);
         data_association_matrix = find_data_association(o, observations, gate_membership_matrix);
-        o = update_and_make_newtracks(o);
+        o = update_and_make_newtracks(o, data_association_matrix);
         o = maintain_tracks(o);
         o = process_one_observation(o, observations);
         o = process_multiple_observations(o, list_of_observations);
