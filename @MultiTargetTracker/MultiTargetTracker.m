@@ -51,6 +51,5 @@ classdef MultiTargetTracker
         o = process_one_observation(o, observations);
         o = process_multiple_observations(o, list_of_observations);
     end
-    
 end
 
