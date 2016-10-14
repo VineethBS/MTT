@@ -5,6 +5,8 @@ classdef MultiTargetTracker
         filter_type;
         gating_method_type;
         data_association_type;
+        gating;
+        data_association;
         list_of_tracks = [];
         list_of_non_active_tracks = [];
     end
@@ -21,7 +23,11 @@ classdef MultiTargetTracker
         end
         
         function data_association_matrix = find_data_association(o, observations, gate_membership_matrix)
-            data_association_matrix = gate_membership_matrix;
+            if strcmp(o.data_association_type, 'GNN')
+                data_association_matrix = o.data_association.find_data_association(observations, o.list_of_tracks);
+            elseif strcmp(o.data_association_type, 'JPDA')
+                data_association_matrix = o.data_association.find_data_association(observations, o.list_of_tracks, gate_membership_matrix);
+            end
         end
         
         function o = update_and_make_newtracks(o)
