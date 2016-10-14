@@ -5,15 +5,11 @@ classdef Track
     
     properties
         kalman_filter;
-        gate_parameters;
-        track_maintenance_parameters;
     end
     
     methods
-        function o = Track(A, C, Q, R, initial_state, gate_parameters, track_maintenance_parameters)
+        function o = Track(A, C, Q, R, initial_state)
             o.kalman_filter = KalmanFilter(A, C, Q, R, initial_state);
-            o.gate_parameters = gate_parameters;
-            o.track_maintenance_parameters = track_maintenance_parameters;
         end
         
         function o = predict(o)
