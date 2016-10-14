@@ -24,6 +24,5 @@ classdef Track
             o.kalman_filter = o.kalman_filter.update(observation);
         end
     end
-    
 end
 
