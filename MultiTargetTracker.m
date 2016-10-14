@@ -3,6 +3,8 @@ classdef MultiTargetTracker
         
     properties
         filter_type;
+        gating_method_type;
+        data_association_type;
         list_of_tracks = [];
         list_of_non_active_tracks = [];
     end
