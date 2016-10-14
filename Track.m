@@ -5,6 +5,8 @@ classdef Track
     
     properties
         kalman_filter;
+        sequence_associated_observations;
+        sequence_states;
     end
     
     methods
