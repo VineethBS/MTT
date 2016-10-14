@@ -5,8 +5,9 @@ num_of_observations = length(observations);
 num_of_tracks = length(o.list_of_tracks);
 
 for i = 1:num_of_observations
+    current_observation = observations{i};
+
     if data_association_matrix(i, end) == 1
-        current_observation = observations{i};
         initial_state = [current_observation', o.filter_parameters.rest_of_initial_state']';
         t = Track(o.filter_parameters.A,  o.filter_parameters.C, o.filter_parameters.Q, o.filter_parameters.R, initial_state);
         new_tracks{end + 1} = t;
@@ -17,6 +18,7 @@ for i = 1:num_of_observations
             end 
         end
     end
+end
 
-    o.list_of_tracks = [o.list_of_tracks, new_tracks];
+o.list_of_tracks = [o.list_of_tracks, new_tracks];
 end

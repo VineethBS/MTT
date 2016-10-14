@@ -25,7 +25,7 @@ classdef MTTSystem
             o.num_of_observations = num_of_observations;
         end
         
-        function run(o)
+        function o = run(o)
             fh = fopen(o.data_file);
             while 1
                 line = fgetl(fh);
@@ -57,10 +57,9 @@ classdef MTTSystem
                     observations{i} = observation_matrix(:, i);
                 end
                 
-                o.MTT.process_one_observation(observations);
+                o.MTT = o.MTT.process_one_observation(observations);
             end
         end
     end
-    
 end
 
