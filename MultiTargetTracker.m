@@ -28,9 +28,17 @@ classdef MultiTargetTracker
         function o = maintain_tracks(o)
         end
         
+        % observations: list of observations at a particular time. Each
+        % observation could be a vector
         function o = process_one_observation(o, observations)
+            o = o.predict_new_positions();
+            gate_membership_matrix = o.find_gate_membership(observations);
+            data_association_matrix = o.find_data_association(observations, gate_membership_matrix);
+            o = o.update_and_make_newtracks();
+            o = o.maintain_tracks();
         end
         
+        % list_of_observations: list of observations across multiple times
         function o = process_multiple_observations(o, list_of_observations)
             
         end
