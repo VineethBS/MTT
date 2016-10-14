@@ -6,8 +6,8 @@ classdef HeuristicDataAssociation
     end
     
     methods
-        function o = HeuristicDataAssociation(epsilon)
-            o.epsilon = epsilon;
+        function o = HeuristicDataAssociation(parameters)
+            o.epsilon = parameters.epsilon;
         end
         
         data_association_matrix = find_data_association(observations, o, list_of_tracks, gate_membership_matrix);
