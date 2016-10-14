@@ -23,7 +23,7 @@ classdef MTTSystem
             o.num_of_observations = num_of_observations;
         end
         
-        function run(start_time, end_time)
+        function run(o)
             fh = fopen(o.data_file);
             while 1
                 line = fgetl(fh);
@@ -31,27 +31,25 @@ classdef MTTSystem
                     break;
                 end
                 tokens = strsplit(line, ',');
-                time = str2double(tokens{1});
-                
-                if (time < start_time) || (time > end_time)
-                    continue;
+                numeric_tokens = zeros(1, length(tokens));
+                for i = 1:length(tokens)
+                    numeric_tokens(i) = str2double(tokens{i});
                 end
                 
-                % If the number of tokens other than time is not a multiple
-                % of dimension_observations then continue on to the next
-                % line
+                time = numeric_tokens(1);
+                numeric_tokens = numeric_tokens(2:end);
+                
+                % If the number of tokens other than time is not a multiple of dimension_observations then continue on to the next line
                 if mod(length(tokens) - 1, o.dimension_observations) ~= 0
                     continue;
                 end
                 
-                num_of_observations = floor((length(tokens) - 1)/o.dimension_observations);
-                observations = {}
+                num_observations = floor((length(tokens) - 1)/o.dimension_observations);
+                observation_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
+                
+                observations = {};
                 for i = 1:num_observations
-                    observation = zeros(o.dimension_observations, 1);
-                    for j = 1:o.dimension_observations
-                        observation(j) = str2double(tokens{(i - 1) * num_observations + j});
-                    end
-                    observations{i} = observation;
+                    observations{i} = observation_matrix(:, i);
                 end
                 
                 o.MTT.process_one_observation(observations);
