@@ -5,12 +5,14 @@ classdef MultiTargetTracker
         filter_type;
         gating_method_type;
         data_association_type;
+        track_maintenance_type;
         
         filter_parameters;
         track_maintenance_parameters;
         
         gating;
         data_association;
+        track_maintenance;
         
         list_of_tracks;
         list_of_non_active_tracks;
@@ -18,11 +20,12 @@ classdef MultiTargetTracker
     
     methods
         function o = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
-                                        data_association_type, data_association_parameters, track_maintenance_parameters)
+                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters)
                                         
             o.filter_type = filter_type;
             o.gating_method_type = gating_method_type;
             o.data_association_type = data_association_type;
+            o.track_maintenance_type = track_maintenance_type;
             
             o.filter_parameters = filter_parameters;
             o.track_maintenance_parameters = track_maintenance_parameters;
@@ -42,6 +45,10 @@ classdef MultiTargetTracker
                 o.gating = SphericalGating(gating_method_parameters);
             elseif strcmp(o.gating_method_type, 'Rectangular')
                 o.gating = RectangularGating(gating_method_parameters);
+            end
+            
+            if strcmp(o.track_maintenance_type, 'NOutOfM')
+                o.track_maintenance = NOutOfM(track_maintenance_parameters);
             end
         end
         
