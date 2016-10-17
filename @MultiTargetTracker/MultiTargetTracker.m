@@ -15,7 +15,7 @@ classdef MultiTargetTracker
         track_maintenance;
         
         list_of_tracks;
-        list_of_non_active_tracks;
+        list_of_inactive_tracks;
     end
     
     methods
@@ -31,7 +31,7 @@ classdef MultiTargetTracker
             o.track_maintenance_parameters = track_maintenance_parameters;
             
             o.list_of_tracks = [];
-            o.list_of_non_active_tracks = [];
+            o.list_of_inactive_tracks = [];
             
             if strcmp(o.data_association_type, 'GNN')
                 o.data_association = GlobalNearestNeighbour(data_association_parameters);
@@ -61,4 +61,3 @@ classdef MultiTargetTracker
         o = process_multiple_observations(o, list_of_times, list_of_observations);
     end
 end
-
