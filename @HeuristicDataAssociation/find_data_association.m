@@ -1,4 +1,5 @@
-function data_association_matrix = find_data_association(observations, o, list_of_tracks, gate_membership_matrix)
+function data_association_matrix = find_data_association(o, observations, list_of_tracks, gate_membership_matrix)
+
 num_of_observations = length(observations);
 num_of_tracks = length(list_of_tracks);
 data_association_matrix = zeros(num_of_observations, num_of_tracks + 1);
@@ -31,7 +32,7 @@ if num_of_observations > 0
             continue;
         end
         
-        [~, max_ind] = max(score_matrix(:, j);
+        [~, max_ind] = max(score_matrix(:, j));
         for i = 1:num_of_observations
             if (data_association_matrix(i, j) == 1) && (i ~= max_ind)
                 data_association_matrix(i, j) = 0;

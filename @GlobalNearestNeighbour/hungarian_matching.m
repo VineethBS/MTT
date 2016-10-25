@@ -275,4 +275,3 @@ function cnum = min_line_cover(Edge)
     [M,r_cov,c_cov,Z_r,Z_c,stepnum] = step4(Edge,r_cov,c_cov,M);
   % Calculate the deficiency
     cnum = length(Edge)-sum(r_cov)-sum(c_cov);
-end
