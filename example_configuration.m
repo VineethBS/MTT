@@ -31,4 +31,8 @@ data_association_parameters.epsilon = 0.1;
 track_maintenance_type = 'NOutOfM';
 track_maintenance_parameters.N = 2;
 track_maintenance_parameters.M = 5;
+track_maintenance_parameters.confirm_threshold = 3;
+track_maintenance_parameters.confirm_M = 3;
+track_maintenance_parameters.confirm_N = 1;
+
 
