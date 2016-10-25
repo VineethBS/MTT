@@ -27,3 +27,8 @@ gating_method_parameters.gate_width = 1;
 
 data_association_type = 'Heuristic';
 data_association_parameters.epsilon = 0.1;
+
+track_maintenance_type = 'NOutOfM';
+track_maintenance_parameters.N = 2;
+track_maintenance_parameters.M = 5;
+
