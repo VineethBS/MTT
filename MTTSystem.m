@@ -19,7 +19,7 @@ classdef MTTSystem
             run(o.configuration_file); % this will populate the local workspace with the configuration variables that we need
             
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
-                                       data_association_type, data_association_parameters);
+                                       data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
                                    
             o.dimension_observations = dimension_observations;
             o.num_of_observations = num_of_observations;
