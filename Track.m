@@ -42,6 +42,13 @@ classdef Track
             o.kalman_filter = o.kalman_filter.update(observation);
         end
         
+        function o = split_track(o)
+            o.sequence_times_observations = [];
+            o.sequence_observations = {};
+            o.sequence_times = [];
+            o.sequence_predicted_observations = {};
+        end
+        
         function predicted_observation = get_observation(o)
             predicted_observation = o.kalman_filter.get_observation();
         end
