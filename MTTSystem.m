@@ -33,6 +33,9 @@ classdef MTTSystem
             o.field_separator = field_separator;
         end
         
+        % run - simulates the step by step running of the multi targets tracker. It reads the data file line by line. Each line is a
+        % sequence of detections, each detection being again a sequence of co-ordinates. For example, 2 detections each with 3 co-ordinates
+        % would look like 10,20,30,10,20,30 which correspond to (10,20,30) and (10,20,30).
         function o = run(o)
             if exist(o.data_file, 'file') == 2
                 fh = fopen(o.data_file);
@@ -55,16 +58,16 @@ classdef MTTSystem
                 time = numeric_tokens(1);
                 numeric_tokens = numeric_tokens(2:end);
                 
-                % If the number of tokens other than time is not a multiple of dimension_observations then continue on to the next line
-                if mod(length(tokens) - 1, o.dimension_observations) ~= 0
+                % If the number of numeric tokens is not a multiple of dimension_observations then continue on to the next line
+                if mod(length(numeric_tokens), o.dimension_observations) ~= 0
                     continue;
                 end
                 
-                num_observations = floor((length(tokens) - 1)/o.dimension_observations);
+                num_observations = floor(length(numeric_tokens)/o.dimension_observations); % this should be an integer
+                % For example, if the numeric tokens were 10,20,30,10,20,30  the observation matrix should be [10 10; 20 20; 30 30]
                 observation_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
                 
-                % the observations to be fed into MTT should be a
-                % cell-array
+                % the observations to be fed into MTT should be a cell-array
                 observations = {};
                 for i = 1:num_observations
                     observations{i} = observation_matrix(:, i);

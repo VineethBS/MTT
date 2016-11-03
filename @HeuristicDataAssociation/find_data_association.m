@@ -4,16 +4,22 @@ num_of_observations = length(observations);
 num_of_tracks = length(list_of_tracks);
 data_association_matrix = zeros(num_of_observations, num_of_tracks + 1);
 if num_of_observations > 0
+    % the score matrix is proportional to finding the current observation within the gate of the current
+    % track, conditioned on the event that the observation is within the gate.
     score_matrix = zeros(num_of_observations, num_of_tracks + 1);
     
     for i = 1:num_of_observations
         current_observation = observations{i};
+        % if the observation does not fall within the gate of any track, then it is taken as a new track
         if gate_membership_matrix(i, end) == 1
             score_matrix(i, end) = Inf;
             data_association_matrix(i, end) = 1;
             continue;
         end
         
+        % here if at least one track has this observation in its gate
+        % for each observation, we iterate among all the tracks. If the observation is within the gate of a track then
+        % the score is taken to be similar to the probability of having the observation under Gaussian noise.
         for j = 1:num_of_tracks
             current_track = list_of_tracks{j};
             if gate_membership_matrix(i, j) == 1
@@ -21,9 +27,8 @@ if num_of_observations > 0
             end
         end
         
-        temp = score_matrix(i, 1:(end - 1));
-        score_matrix(i, end) = min(temp(temp > 0)) - o.epsilon;
-        [~, ind] = max(score_matrix(i, :));
+        % why do all this?        
+        [~, ind] = max(score_matrix(i, 1:(end - 1)));
         data_association_matrix(i, ind) = 1;
     end
     
