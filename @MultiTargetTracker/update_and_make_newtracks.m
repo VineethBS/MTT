@@ -19,14 +19,14 @@ for i = 1:num_of_observations
             t = t.record_associated_observation(time, current_observation);
         else
             cost_vector = Inf * ones(1, num_of_tracks);
-            for j = 1:num_tracks
+            for j = 1:num_of_tracks
                 current_track = o.list_of_tracks{j};
                 if gate_membership_matrix(i, j) == 1
                     cost_vector(j) = distance(current_observation, current_track.get_observation());
                 end
             end
             [~, track_from_which_split] = min(cost_vector);
-            t = o.list_of_tracks{track_from_which_split}.split_copy();
+            t = o.list_of_tracks{track_from_which_split}.split_track();
             t = t.update(current_observation);
             t = t.record_predicted_observation(time);
             t = t.record_associated_observation(time, current_observation);
@@ -47,6 +47,7 @@ end
 % For the tracks which do not have any associated observations the current time and observation is recorded
 for j = 1:num_of_tracks
     if sum(data_association_matrix(:, j)) == 0
+        o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_observation());
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
     end
 end
