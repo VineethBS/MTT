@@ -1,4 +1,4 @@
-function data_association_matrix = find_data_association(o, observations, list_of_tracks)
+function data_association_matrix = find_data_association(o, observations, list_of_tracks, gate_membership_matrix)
 num_of_observations = length(observations);
 num_of_tracks = length(list_of_tracks);
 
@@ -17,7 +17,7 @@ if num_of_observations > 0
         end
     end
     [temp_data_association_matrix, ~] = o.hungarian_matching(cost_matrix);
-    data_association_matrix = [temp_data_association, 1 - sum(temp_data_association_matrix, 2)];
+    data_association_matrix = [temp_data_association_matrix, 1 - sum(temp_data_association_matrix, 2)];
 end
     
 end
