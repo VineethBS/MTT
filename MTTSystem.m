@@ -49,7 +49,7 @@ classdef MTTSystem
                     break;
                 end
                 tokens = strsplit(line, o.field_separator);
-                o.run_once(tokens);
+                o = o.run_once(tokens);
             end
         end
         
@@ -75,6 +75,7 @@ classdef MTTSystem
             observation_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
             
             % the observations to be fed into MTT should be a cell-array
+            % each observation is a column vector
             observations = {};
             for i = 1:num_observations
                 observations{i} = observation_matrix(:, i);
