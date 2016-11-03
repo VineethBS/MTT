@@ -4,6 +4,7 @@ dt = 0.05;
 
 dimension_observations = 1;
 num_of_observations = 100;
+field_separator = ',';
 
 filter_type = 'Kalman';
 

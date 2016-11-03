@@ -4,6 +4,7 @@ classdef MTTSystem
     % the data (through a data file).
     
     properties
+        field_separator; % character
         configuration_file; % string
         data_file; % string
         MTT; % MTT 
@@ -16,17 +17,29 @@ classdef MTTSystem
             o.configuration_file = configuration_file;
             o.data_file = data_file;
             
-            run(o.configuration_file); % this will populate the local workspace with the configuration variables that we need
-            
+            if exist(o.configuration_file, 'file') == 2
+                run(o.configuration_file); % this will populate the local workspace with the configuration variables that we need
+            else
+                error('%s does not exist!', o.configuration_file);
+                return;
+            end
+                
+            % initialize the Multi Target Tracker object with the configuration parameters
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
                                    
             o.dimension_observations = dimension_observations;
             o.num_of_observations = num_of_observations;
+            o.field_separator = field_separator;
         end
         
         function o = run(o)
-            fh = fopen(o.data_file);
+            if exist(o.data_file, 'file') == 2
+                fh = fopen(o.data_file);
+            else
+                error('%s does not exist!', o.data_file);
+                return
+            end
             while 1
                 line = fgetl(fh);
                 if ~ischar(line)
