@@ -4,13 +4,13 @@ classdef KalmanFilter
     %   x_{k + 1} = A x_{k} + w_{k}; where x_{k} is the state
     %   y_{k} = C x_{k} + v_{k}; where y_{k} is the observation
     %   Both w_{k} and v_{k} are jointly Gaussian vectors with zero mean
-    %   and covariance matrices Q and Rs
+    %   and covariance matrices Q and R
     properties
         A;
         C;
         Q;
         R;
-        state;
+        state; % the current state
         covariance;
         predicted_state;
         predicted_covariance;
@@ -38,6 +38,7 @@ classdef KalmanFilter
             o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;
         end
         
+        % return the observation corresponding to the current state of the filter
         function predicted_observation = get_observation(o)
             predicted_observation = o.C * o.state;
         end

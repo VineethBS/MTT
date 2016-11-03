@@ -1,4 +1,4 @@
-function data_association_matrix = find_data_association(o, observations, list_of_tracks, gate_membership_matrix)
+function data_association_matrix = find_data_association(~, observations, list_of_tracks, gate_membership_matrix)
 
 num_of_observations = length(observations);
 num_of_tracks = length(list_of_tracks);
@@ -27,16 +27,19 @@ if num_of_observations > 0
             end
         end
         
-        % why do all this?        
+        % Find that track which has the maximum score and assign this observation to that track        
         [~, ind] = max(score_matrix(i, 1:(end - 1)));
         data_association_matrix(i, ind) = 1;
     end
     
+    % Iterate over tracks
     for j = 1:num_of_tracks
+        % If only one observation has been assigned to a track then no conflict.
         if sum(data_association_matrix(:, j)) <= 1
             continue;
         end
-        
+        % Multiple observations have been assigned to this track, need to reassign some observations
+        % All observations which have a score less than the maximum is just made into new tracks.
         [~, max_ind] = max(score_matrix(:, j));
         for i = 1:num_of_observations
             if (data_association_matrix(i, j) == 1) && (i ~= max_ind)

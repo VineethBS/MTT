@@ -6,7 +6,11 @@ num_of_tracks = length(o.list_of_tracks);
 
 for i = 1:num_of_observations
     current_observation = observations{i};
-
+    % If the last column is 1 for an observation then a new target has to be made
+    % If the new target is not within the gate of any existing tracks, then a new track is made with default initial
+    % parameters. If the new target is within the gate of some existing tracks, then a new track is made by deriving the
+    % track from the nearest track to the observation.
+    
     if data_association_matrix(i, end) == 1
         if gate_membership_matrix(i, end) == 1
             initial_state = [current_observation', o.filter_parameters.rest_of_initial_state']';
@@ -32,14 +36,15 @@ for i = 1:num_of_observations
     else
         for j = 1:num_of_tracks
             if data_association_matrix(i, j) == 1
-                o.list_of_tracks{j} = o.list_of_tracks{j}.update(current_observation);
                 o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
+                o.list_of_tracks{j} = o.list_of_tracks{j}.update(current_observation);
                 o.list_of_tracks{j} = o.list_of_tracks{j}.record_associated_observation(time, current_observation);
             end 
         end
     end
 end
 
+% For the tracks which do not have any associated observations the current time and observation is recorded
 for j = 1:num_of_tracks
     if sum(data_association_matrix(:, j)) == 0
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);

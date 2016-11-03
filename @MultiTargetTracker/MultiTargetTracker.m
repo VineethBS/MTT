@@ -2,15 +2,15 @@ classdef MultiTargetTracker
     %Multi target tracker with the multi target tracking algorithm
         
     properties
-        filter_type;
-        gating_method_type;
-        data_association_type;
+        filter_type; % configuration parameters for the types of filter, gating method, data association, and track maintenance.
+        gating_method_type; 
+        data_association_type; 
         track_maintenance_type;
         
         filter_parameters;
         track_maintenance_parameters;
         
-        gating;
+        gating; % actual objects for gating, data association and track maintenance
         data_association;
         track_maintenance;
         
