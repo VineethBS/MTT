@@ -40,4 +40,15 @@ postprocessing_parameters.velocity_threshold_parameters.velocity_threshold = 10;
 postprocessing_parameters.velocity_threshold_parameters.direction = 'greater';
 postprocessing_parameters.atleastN_parameters.N = 10;
 
+visualization1D_parameters.filename = 'example_data.csv';
+visualization1D_parameters.plot_input = 1;
+visualization1D_parameters.plot_tracks = 1;
+visualization1D_parameters.in_field_separator = ',';
+visualization1D_parameters.plottype_input = 'ro';
+visualization1D_parameters.plottype_track = 'k';
+
+post_MTT_run_sequence = {'atleastN','velocitythreshold','plot1D'};
+post_MTT_run_parameters{1} = postprocessing_parameters;
+post_MTT_run_parameters{2} = postprocessing_parameters;
+post_MTT_run_parameters{3} = visualization1D_parameters;
 
