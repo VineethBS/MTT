@@ -2,17 +2,16 @@ classdef Visualization
     % Visualization - block for visualization (and saving) experiment output
     
     properties
-        visualization_type;
         visualization_parameters;
     end
     
     methods
-        function o = Visualization(type, parameters)
-            o.visualization_type = type;
+        function o = Visualization(parameters)
             o.visualization_parameters = parameters;
         end
         
         plot_1D(o, tracks);
+        plot_3D(o, tracks);
     end
     
 end
