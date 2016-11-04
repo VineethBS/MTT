@@ -9,7 +9,6 @@ classdef MTTSystem
         data_file; % string
         MTT; % MTT 
         dimension_observations; % int
-        num_of_observations; % int
     end
     
     methods
@@ -29,7 +28,6 @@ classdef MTTSystem
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
                                    
             o.dimension_observations = dimension_observations;
-            o.num_of_observations = num_of_observations;
             o.field_separator = field_separator;
         end
         
