@@ -6,7 +6,7 @@ classdef SphericalGating
     end
     
     methods
-        function o = RectangularGating(parameters)
+        function o = SphericalGating(parameters)
             o.gate_radius = parameters.gate_radius;
         end
         
