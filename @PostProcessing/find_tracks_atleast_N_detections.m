@@ -3,6 +3,7 @@ function valid_tracks = find_tracks_atleast_N_detections(o, tracks)
 % at least N associations.
 N = o.atleastN_parameters.N;
 j = 1;
+valid_tracks = [];
 for i = 1:length(tracks)
     if length(tracks{i}.sequence_times_observations) >= N
         valid_tracks{j} = tracks{i};

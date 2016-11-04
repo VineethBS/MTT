@@ -8,13 +8,14 @@ function valid_tracks = find_tracks_velocity_threshold(o, tracks)
 velocity_threshold = o.velocity_threshold_parameters.velocity_threshold;
 direction = o.velocity_threshold_parameters.direction;
 j = 1;
+valid_tracks = [];
 for i = 1:length(tracks)
     observed_state_sequence = cell2mat(tracks{i}.sequence_predicted_observations); % the observations are converted into a matrix
     time_sequence = tracks{i}.sequence_times;
     
     observed_state_delta = diff(observed_state_sequence, [], 2);
     time_delta = diff(time_sequence, [], 2);
-    time_delta = repmat(time_delta, size(observed_velocity, 1), 1);
+    time_delta = repmat(time_delta, size(observed_state_delta, 1), 1);
     observed_velocity = observed_state_delta ./ time_delta;
     observed_velocity = mean(observed_velocity, 2); % find the average along the column for every dimension of the observed state
     observed_velocity = abs(observed_velocity);
