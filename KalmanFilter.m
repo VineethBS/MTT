@@ -18,13 +18,14 @@ classdef KalmanFilter
     end
     
     methods
-        function o = KalmanFilter(A, C, Q, R, initial_state)
-            o.A = A;
-            o.C = C;
-            o.Q = Q;
-            o.R = R;
+        function o = KalmanFilter(parameters, initial_observation)
+            o.A = parameters.A;
+            o.C = parameters.C;
+            o.Q = parameters.Q;
+            o.R = parameters.R;
+            initial_state = [initial_observation', parameters.rest_of_initial_state']';
             o.state = initial_state;
-            o.covariance = Q;
+            o.covariance = o.Q;
         end
         
         function o = predict(o)
