@@ -9,6 +9,8 @@ classdef MTTSystem
         data_file; % string
         MTT; % MTT 
         dimension_observations; % int
+        post_MTT_run_sequence;
+        post_MTT_run_parameters;
     end
     
     methods
@@ -26,9 +28,10 @@ classdef MTTSystem
             % initialize the Multi Target Tracker object with the configuration parameters
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
-                                   
             o.dimension_observations = dimension_observations;
             o.field_separator = field_separator;
+            o.post_MTT_run_sequence = post_MTT_run_sequence;
+            o.post_MTT_run_parameters = post_MTT_run_parameters;
         end
         
         % run - simulates the step by step running of the multi targets tracker. It reads the data file line by line. Each line is a
@@ -80,6 +83,27 @@ classdef MTTSystem
             end
             
             o.MTT = o.MTT.process_one_observation(time, observations);
+        end
+        
+        % run post processing, visualization, and reporting tasks according to the instructions in post_MTT_run_sequence
+        function o = post_MTT_run(o)
+            tracks = [o.MTT.list_of_tracks, o.MTT.list_of_inactive_tracks];
+            for i = 1:length(o.post_MTT_run_sequence)
+                instruction = o.post_MTT_run_sequence{i};
+                if strcmp(instruction, 'atleastN')
+                    temp = PostProcessing(o.post_MTT_run_parameters{i});
+                    tracks = temp.find_tracks_atleast_N_detections(tracks); % tracks change here
+                elseif strcmp(instruction, 'velocitythreshold')
+                    temp = PostProcessing(o.post_MTT_run_parameters{i});
+                    tracks = temp.find_tracks_velocity_threshold(tracks); % tracks change here
+                elseif strcmp(instruction, 'plot1D')
+                    temp = Visualization(o.post_MTT_run_parameters{i});
+                    temp.plot_1D(tracks);
+                elseif strcmp(instruction, 'plot3D')
+                    temp = Visualization(o.post_MTT_run_parameters{i});
+                    temp.plot_3D(tracks);
+                end
+            end
         end
     end
 end
