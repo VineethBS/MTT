@@ -17,11 +17,11 @@ else
 end
 
 figure(1);
-subplot(3, 1, 1);
+subplot(1, 3, 1);
 hold on;
-subplot(3, 1, 2);
+subplot(1, 3, 2);
 hold on;
-subplot(3, 1, 3);
+subplot(1, 3, 3);
 hold on;
 
 if plot_input == 1
@@ -50,7 +50,7 @@ if plot_input == 1
         for i = 1:num_observations
             observations = observation_matrix(:, i);
             for j = 1:dimension_observations
-                subplot(3, 1, j);
+                subplot(1, 3, j);
                 plot(time, observations(j), plottype_input);
             end
         end
@@ -61,8 +61,9 @@ end
 
 if plot_tracks == 1
     for i = 1:length(tracks)
-        temp = cell2mat(tracks{i}.sequence_predicted_observations;
+        temp = cell2mat(tracks{i}.sequence_predicted_observations);
         for j = 1:dimension_observations
+            subplot(1, 3, j);
             plot(tracks{i}.sequence_times, temp(j, :), plottype_track);
         end
     end
