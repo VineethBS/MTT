@@ -36,4 +36,8 @@ track_maintenance_parameters.confirm_threshold = 3;
 track_maintenance_parameters.confirm_M = 3;
 track_maintenance_parameters.confirm_N = 1;
 
+postprocessing_parameters.velocity_threshold_parameters.velocity_threshold = 10;
+postprocessing_parameters.velocity_threshold_parameters.direction = 'greater';
+postprocessing_parameters.atleastN_parameters.N = 10;
+
 
