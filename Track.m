@@ -14,12 +14,9 @@ classdef Track
     methods
         function o = Track(filter_type, filter_parameters, initial_observation)
             if strcmp(filter_type,'kalmanfilter')
-                A = filter_parameters.A;
-                C = filter_parameters.C;
-                Q = filter_parameters.Q;
-                R = filter_parameters.R;
-                initial_state = [initial_observation', filter_parameters.rest_of_initial_state']';
-                o.filter = KalmanFilter(A, C, Q, R, initial_state);
+                o.filter = KalmanFilter(filter_parameters, initial_observation);
+            elseif strcmp(filter_type, 'alphabetafilter')
+                o.filter = AlphaBetaFilter(filter_parameters, initial_observation);
             end
             o.sequence_times_observations = [];
             o.sequence_observations = {};
