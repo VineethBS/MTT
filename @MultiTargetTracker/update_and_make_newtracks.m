@@ -13,8 +13,7 @@ for i = 1:num_of_observations
     
     if data_association_matrix(i, end) == 1
         if gate_membership_matrix(i, end) == 1
-            initial_state = [current_observation', o.filter_parameters.rest_of_initial_state']';
-            t = Track(o.filter_parameters.A,  o.filter_parameters.C, o.filter_parameters.Q, o.filter_parameters.R, initial_state);
+            t = Track(o.filter_type, o.filter_parameters, current_observation);
             t = t.record_predicted_observation(time);
             t = t.record_associated_observation(time, current_observation);
         else
