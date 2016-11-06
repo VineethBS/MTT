@@ -33,17 +33,51 @@ classdef KalmanFilter
             o.predicted_covariance = o.A * o.covariance * o.A' + o.Q;
         end
         
+        % state update for a single observation - such as in the case of GNN
         function o = update(o, observation)
             o.kalman_gain = o.predicted_covariance * o.C' * inv(o.C * o.predicted_covariance * o.C' + o.R);
             o.state = o.predicted_state + o.kalman_gain * (observation - o.C * o.predicted_state);
             o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;
         end
         
-        % return the observation corresponding to the current state of the filter
-        function predicted_observation = get_observation(o)
-            predicted_observation = o.C * o.state;
+        % state update for multiple observations; each observation is associated with a probability
+        % observations is a cell array of the set of observations to be used to update the filter
+        % observation probability is a vector of probabilities - with length = the number of observations. Entries give
+        % the probability of an observation being associated with this track.
+        % the probability that there is no observation associated with this track is in probability_no_assoc_observation
+        % This update equation is from "Sonar Tracking of Multiple Targets using JPDA" - Fortmann et al.
+        % Note that there is an error in eqs 2.12 (the transpose of the Wk term has to be taken)
+        % Note that under JPDA the update in the posterior probability is only approximated by the state and covariance
+        % updates.
+        function o = update_with_multiple_observations(o, observations, observation_probability, probability_no_assoc_observation)
+            num_observations = length(observations);
+            predicted_observation = o.get_predicted_observation();
+            combined_innovation = zeros(length(predicted_observation), 1);
+            innovation_sample_correlation = zeros(length(predicted_observation)); % matrix of size num of dimensions x num of dimensions
+            for i = 1:num_observations
+                current_observation = observations{i};
+                current_innovation = current_observation - predicted_observation;
+                combined_innovation = combined_observation + observation_probability(i) * current_innovation;
+                innovation_sample_correlation = innovation_sample_correlation + observation_probability(i) * (current_innovation * current_innovation');
+            end
+            innovation_sample_covariance = innovation_sample_correlation - (combined_innovation * combined_innovation');
+            
+            % updates using the combined innovation
+            o.observation_covariance = o.C * o.predicted_covariance * o.C' + o.R;
+            o.kalman_gain = o.predicted_covariance * o.C' * inv(o.observation_covariance);
+            o.state = o.predicted_state + o.kalman_gain * combined_innovation;
+            o.covariance = o.predicted_covariance - (1 - probability_no_assoc_observation) * o.kalman_gain * o.C * o.predicted_covariance + ...
+                o.kalman_gain * innovation_sample_covariance * o.kalman_gain';
         end
+            
+        % return the observation corresponding to the current state of the filter
+        function observation = get_observation(o)
+            observation = o.C * o.state;
+        end
+        
+        function predicted_observation = get_predicted_observation(o)
+            predicted_observation = o.C * o.predicted_state;
+        end 
     end
-    
 end
 
