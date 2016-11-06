@@ -32,7 +32,7 @@ classdef Track
         % track (should be called at every point where the track is active)
         function o = record_predicted_observation(o, time)
             o.sequence_times = [o.sequence_times, time];
-            o.sequence_predicted_observations{end + 1} = o.get_observation();
+            o.sequence_predicted_observations{end + 1} = o.get_predicted_observation();
         end
         
         % Records an actual observation which has been associated to this
@@ -53,8 +53,12 @@ classdef Track
             o.sequence_predicted_observations = {};
         end
         
-        function predicted_observation = get_observation(o)
-            predicted_observation = o.filter.get_observation();
+        function observation = get_observation(o)
+            observation = o.filter.get_observation();
+        end
+        
+        function predicted_observation = get_predicted_observation(o)
+            predicted_observation = o.filter.get_predicted_observation();
         end
     end
 end
