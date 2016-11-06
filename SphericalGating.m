@@ -19,7 +19,7 @@ classdef SphericalGating
                     current_observation = observations{i};
                     for j = 1:num_of_tracks
                         current_track = list_of_tracks{j};
-                        if distance(current_observation, current_track.get_observation()) <= o.gate_radius
+                        if distance(current_observation, current_track.get_predicted_observation()) <= o.gate_radius
                             gate_membership_matrix(i, j) = 1;
                         end
                     end
