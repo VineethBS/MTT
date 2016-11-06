@@ -23,7 +23,7 @@ classdef RectangularGating
                     current_observation = observations{i};
                     for j = 1:num_of_tracks
                         current_track = list_of_tracks{j};
-                        if prod(abs(current_observation - current_track.get_observation()) <= o.gate_width/2)
+                        if prod(abs(current_observation - current_track.get_predicted_observation()) <= o.gate_width/2)
                             gate_membership_matrix(i, j) = 1;
                         end
                     end
