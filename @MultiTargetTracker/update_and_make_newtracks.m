@@ -21,7 +21,7 @@ for i = 1:num_of_observations
             for j = 1:num_of_tracks
                 current_track = o.list_of_tracks{j};
                 if gate_membership_matrix(i, j) == 1
-                    cost_vector(j) = distance(current_observation, current_track.get_observation());
+                    cost_vector(j) = distance(current_observation, current_track.get_predicted_observation());
                 end
             end
             [~, track_from_which_split] = min(cost_vector);
@@ -46,7 +46,10 @@ end
 % For the tracks which do not have any associated observations the current time and observation is recorded
 for j = 1:num_of_tracks
     if sum(data_association_matrix(:, j)) == 0
-        o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_observation());
+        % Option 1 : Use the observation corresponding to the state without prediction
+        % o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_observation());
+        % Option 2 : Use the observation corresponding to the predicted state
+        o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_predicted_observation());
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
     end
 end
