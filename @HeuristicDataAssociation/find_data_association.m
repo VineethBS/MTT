@@ -23,7 +23,7 @@ if num_of_observations > 0
         for j = 1:num_of_tracks
             current_track = list_of_tracks{j};
             if gate_membership_matrix(i, j) == 1
-                score_matrix(i, j) = exp(-distance(current_observation, current_track.get_observation()) ^ 2);
+                score_matrix(i, j) = exp(-distance(current_observation, current_track.get_predicted_observation()) ^ 2);
             end
         end
         
