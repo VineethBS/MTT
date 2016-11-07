@@ -41,8 +41,12 @@ classdef AlphaBetaFilter
         end
         
         % return the observation corresponding to the current state of the filter
-        function predicted_observation = get_observation(o)
-            predicted_observation = o.C * o.state;
+        function observation = get_observation(o)
+            observation = o.C * o.state;
+        end
+        
+        function predicted_observation = get_predicted_observation(o)
+            predicted_observation = o.C * o.predicted_state;
         end
     end
 end
