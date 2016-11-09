@@ -2,10 +2,14 @@ classdef JProbDataAssociation
     % Joint probabilistic data association
     
     properties
+        detection_probability;
+        false_alarm_rate;
     end
     
     methods
-        function o = JProbDataAssociation(~)
+        function o = JProbDataAssociation(parameters)
+            o.detection_probability = parameters.detection_probability;
+            o.false_alarm_rate = parameters.false_alarm_rate;
         end
         
         jpda_probability_matrix = find_data_association(o, observations, list_of_tracks, gate_membership_matrix);
