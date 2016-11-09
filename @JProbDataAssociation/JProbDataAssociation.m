@@ -13,9 +13,9 @@ classdef JProbDataAssociation
         end
         
         jpda_probability_matrix = find_data_association(o, observations, list_of_tracks, gate_membership_matrix);
-        all_possible_valid_hypothesis = get_all_possible_valid_hypothesis(o, gate_membership_matrix);
-        hypothesis_probability = get_hypothesis_probability(o, all_possible_valid_hypothesis);
-        jpda_probability_matrix = get_jpda_probability_matrix(o, hypothesis_probability);
+        all_possible_valid_hypothesis = o.get_all_possible_valid_hypothesis(gate_membership_matrix);
+        hypothesis_probability = o.get_hypothesis_probability(observations, list_of_tracks, all_possible_valid_hypothesis); 
+        jpda_probability_matrix = o.get_jpda_probability_matrix(observations, list_of_tracks, hypothesis_probability,  all_possible_valid_hypothesis); 
     end
     
 end

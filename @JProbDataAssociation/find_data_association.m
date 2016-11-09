@@ -10,6 +10,6 @@ track_indices = 1:num_tracks;
 if num_observations > 0
     % all_possible_valid_hypothesis - every column is a possible association hypothesis
     all_possible_valid_hypothesis = o.get_all_possible_valid_hypothesis(gate_membership_matrix); % generate the set of all possible valid hypothesis
-    hypothesis_probability = o.get_hypothesis_probability(all_possible_valid_hypothesis); % find out the probability of each hypothesis
-    jpda_probability_matrix = o.get_jpda_probability_matrix(hypothesis_probability); % find out the track association probability for each observation
+    hypothesis_probability = o.get_hypothesis_probability(observations, list_of_tracks, all_possible_valid_hypothesis); % find out the probability of each hypothesis
+    jpda_probability_matrix = o.get_jpda_probability_matrix(observations, list_of_tracks, hypothesis_probability,  all_possible_valid_hypothesis); % find out the track association probability for each observation
 end
