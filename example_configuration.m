@@ -26,8 +26,14 @@ filter_parameters.rest_of_initial_state = [0
 gating_method_type = 'Rectangular';
 gating_method_parameters.gate_width = 1;
 
+% parameters for heuristic data association
 data_association_type = 'Heuristic';
 data_association_parameters.epsilon = 0.1;
+
+% parameters for JPDA 
+data_association_type = 'JPDA';
+data_association_parameters.detection_probability = 0.9;
+data_association_parameters.false_alarm_rate = 0.05;
 
 track_maintenance_type = 'NOutOfM';
 track_maintenance_parameters.N = 2;
