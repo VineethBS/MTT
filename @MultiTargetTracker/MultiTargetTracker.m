@@ -3,7 +3,7 @@ classdef MultiTargetTracker
         
     properties
         filter_type; % configuration parameters for the types of filter, gating method, data association, and track maintenance.
-        gating_method_type; 
+        gating_method_type;
         data_association_type; 
         track_maintenance_type;
         
