@@ -75,9 +75,15 @@ classdef KalmanFilter
             observation = o.C * o.state;
         end
         
+        % return the predicted observation
         function predicted_observation = get_predicted_observation(o)
             predicted_observation = o.C * o.predicted_state;
         end 
+        
+        % return the innovation covariance for the observations
+        function innovation_covariance = get_innovation_covariance(o)
+            innovation_covariance = o.C * o.predicted_covariance * o.C' + o.R;
+        end
     end
 end
 
