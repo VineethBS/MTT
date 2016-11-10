@@ -64,6 +64,10 @@ classdef Track
         function predicted_observation = get_predicted_observation(o)
             predicted_observation = o.filter.get_predicted_observation();
         end
+        
+        function innovation_covariance = get_innovation_covariance(o)
+            innovation_covariance = o.filter.get_innovation_covariance();
+        end
     end
 end
 
