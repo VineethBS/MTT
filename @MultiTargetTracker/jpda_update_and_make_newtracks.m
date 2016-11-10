@@ -26,7 +26,7 @@ for j = 1:num_of_tracks
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
         probability_no_assoc_observation = 1 - sum(jpda_probability_matrix(:,j));
         observation_probability = jpda_probability_matrix(:, j);
-        o.list_of_tracks{j} = o.list_of_tracks{j}.update_with_multiple_observations(o, observations, observation_probability, probability_no_assoc_observation);
+        o.list_of_tracks{j} = o.list_of_tracks{j}.update_with_multiple_observations(observations, observation_probability, probability_no_assoc_observation);
         % we record the observation corresponding to the updated state
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_associated_observation(time, o.list_of_tracks{j}.get_observation()); 
     end
