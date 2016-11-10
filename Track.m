@@ -35,6 +35,12 @@ classdef Track
             o.sequence_predicted_observations{end + 1} = o.get_predicted_observation();
         end
         
+        % Records the first observation when the track is born
+        function o = record_first_observation(o, time)
+            o.sequence_times = [o.sequence_times, time];
+            o.sequence_predicted_observations{end + 1} = o.get_observation(); % since there is no first prediction
+        end
+        
         % Records an actual observation which has been associated to this
         % track
         function o = record_associated_observation(o, time, observation)
