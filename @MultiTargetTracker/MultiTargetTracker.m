@@ -56,6 +56,7 @@ classdef MultiTargetTracker
         gate_membership_matrix = find_gate_membership(o, observations);
         data_association_matrix = find_data_association(o, observations, gate_membership_matrix);
         o = update_and_make_newtracks(o, time, observations, gate_membership_matrix, data_association_matrix);
+        o = jpda_update_and_make_newtracks(o, time, observations, gate_membership_matrix, jpda_probability_matrix);
         o = maintain_tracks(o);
         o = process_one_observation(o, time, observations);
         o = process_multiple_observations(o, list_of_times, list_of_observations);
