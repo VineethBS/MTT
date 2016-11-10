@@ -18,7 +18,7 @@ for i = 1:num_hypothesis
         else
             current_track = list_of_tracks{current_hypothesis(j)};
             probability_of_obs_given_hypothesis = probability_of_obs_given_hypothesis * ... 
-                mvnpdf(current_observation, current_track.get_observation(), current_track.get_innovation_covariance);
+                mvnpdf(current_observation, current_track.get_observation(), current_track.get_innovation_covariance());
         end
     end
     num_detections = sum(current_hypothesis > 0);
