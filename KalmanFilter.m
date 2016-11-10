@@ -57,14 +57,14 @@ classdef KalmanFilter
             for i = 1:num_observations
                 current_observation = observations{i};
                 current_innovation = current_observation - predicted_observation;
-                combined_innovation = combined_observation + observation_probability(i) * current_innovation;
+                combined_innovation = combined_innovation + observation_probability(i) * current_innovation;
                 innovation_sample_correlation = innovation_sample_correlation + observation_probability(i) * (current_innovation * current_innovation');
             end
             innovation_sample_covariance = innovation_sample_correlation - (combined_innovation * combined_innovation');
             
             % updates using the combined innovation
-            o.observation_covariance = o.C * o.predicted_covariance * o.C' + o.R;
-            o.kalman_gain = o.predicted_covariance * o.C' * inv(o.observation_covariance);
+            observation_covariance = o.C * o.predicted_covariance * o.C' + o.R;
+            o.kalman_gain = o.predicted_covariance * o.C' * inv(observation_covariance);
             o.state = o.predicted_state + o.kalman_gain * combined_innovation;
             o.covariance = o.predicted_covariance - (1 - probability_no_assoc_observation) * o.kalman_gain * o.C * o.predicted_covariance + ...
                 o.kalman_gain * innovation_sample_covariance * o.kalman_gain';
