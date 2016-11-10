@@ -8,7 +8,7 @@ for i = 1:num_of_observations
     % for JPDA a new track is started for an observation only if the observation falls outside the combined gates of all tracks
     if gate_membership_matrix(i, end) == 1 
         t = Track(o.filter_type, o.filter_parameters, current_observation);
-        t = t.record_predicted_observation(time);
+        t = t.record_first_observation(time);
         t = t.record_associated_observation(time, current_observation);
         new_tracks{end + 1} = t;
     end
