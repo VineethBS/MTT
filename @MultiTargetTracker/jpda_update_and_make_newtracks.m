@@ -18,9 +18,9 @@ for j = 1:num_of_tracks
     % For the tracks which do not have any associated observations the current time and observation is recorded
     if sum(gate_membership_matrix(:, j)) == 0
         % Option 1 : Use the observation corresponding to the state without prediction
-        % o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_observation());
+        o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_observation());
         % Option 2 : Use the observation corresponding to the predicted state
-        o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_predicted_observation());
+        % o.list_of_tracks{j} = o.list_of_tracks{j}.update(o.list_of_tracks{j}.get_predicted_observation());
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
     else % for the tracks with some probability of association
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
