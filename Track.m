@@ -17,6 +17,10 @@ classdef Track
                 o.filter = KalmanFilter(filter_parameters, initial_observation);
             elseif strcmp(filter_type, 'alphabetafilter')
                 o.filter = AlphaBetaFilter(filter_parameters, initial_observation);
+            elseif strcmp(filter_type, 'extendedkalmanfilter')
+                o.filter = ExtendedKalmanFilter(filter_parameters, initial_observation);
+            elseif strcmp(filter_type, 'unscentedkalmanfilter')
+                o.filter = UnscentedKalmanFilter(filter_parameters, initial_observation);
             end
             o.sequence_times_observations = [];
             o.sequence_observations = {};
