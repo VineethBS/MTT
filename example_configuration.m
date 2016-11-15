@@ -6,7 +6,8 @@ dimension_observations = 1;
 num_of_observations = 100;
 field_separator = ',';
 
-filter_type = 'Kalman';
+% filter parameters for Kalman Filter
+filter_type = 'kalmanfilter';
 
 filter_parameters.A = [1 dt dt^2
                        0 1 dt
@@ -23,6 +24,22 @@ filter_parameters.R = 1;
 filter_parameters.rest_of_initial_state = [0
                                            0];
 
+% filter parameters for Extended Kalman Filter
+filter_type = 'extendedkalmanfilter';
+filter_parameters.f = @(x) x;
+filter_parameters.F = @(x) x;
+filter_parameters.h = @(x) x;
+filter_parameters.H = @(x) x;
+filter_parameters.rest_of_initial_state = [0
+                                           0];
+
+filter_parameters.Q = [1 0 0;
+                       0 1 0;
+                       0 0 1];
+                   
+filter_parameters.R = 1;
+
+% parameters for the gating method
 gating_method_type = 'Rectangular';
 gating_method_parameters.gate_width = 1;
 
