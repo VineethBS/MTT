@@ -39,6 +39,25 @@ filter_parameters.Q = [1 0 0;
                    
 filter_parameters.R = 1;
 
+% filter parameters for the Static Multi Modal Filter
+filter_type = 'staticmultimodal';
+filter_parameters.filters{1} = 'kalmanfilter';
+filter_parameters.filterparameters{1}.A = [1 dt dt^2
+    0 1 dt
+    0 0 1];
+filter_parameters.filterparameters{1}.C = [1 0 0];
+
+filter_parameters.filterparameters{1}.Q = [1 0 0;
+    0 1 0;
+    0 0 1];
+                   
+filter_parameters.filterparameters{1}.R = 1;
+
+filter_parameters.filterparameters{1}.rest_of_initial_state = [0
+    0];
+filter_parameters.filter_prior_probabilities = [1];
+
+
 % parameters for the gating method
 gating_method_type = 'Rectangular';
 gating_method_parameters.gate_width = 1;
