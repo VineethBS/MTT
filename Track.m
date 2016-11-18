@@ -21,6 +21,8 @@ classdef Track
                 o.filter = ExtendedKalmanFilter(filter_parameters, initial_observation);
             elseif strcmp(filter_type, 'unscentedkalmanfilter')
                 o.filter = UnscentedKalmanFilter(filter_parameters, initial_observation);
+            elseif strcmp(filter_type, 'staticmultimodal')
+                o.filter = StaticMultiModalFilter(filter_parameters, initial_observation);
             end
             o.sequence_times_observations = [];
             o.sequence_observations = {};
