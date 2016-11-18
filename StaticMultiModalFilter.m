@@ -25,7 +25,7 @@ classdef StaticMultiModalFilter
             end
             o.filter_posterior_probabilities = parameters.filter_prior_probabilities; % the posterior probabilities are initialized with the prior
             o.state = initial_state;
-            o.covariance = o.Q;
+            o.covariance = p.Q;
         end
         
         % for the static multi modal filter, each one of the component filters have to be individually updated
@@ -36,11 +36,20 @@ classdef StaticMultiModalFilter
             end
         end
         
-        % state update for a single observation - such as in the case of GNN
+        % update for a single observation
+        % the update step is split into two, each component filter has to be updated separately
         function o = update(o, observation)
-            o.kalman_gain = o.predicted_covariance * o.C' * inv(o.C * o.predicted_covariance * o.C' + o.R);
-            o.state = o.predicted_state + o.kalman_gain * (observation - o.C * o.predicted_state);
-            o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;
+            num_filters = length(o.filters);
+            for i = 1:num_filters
+                % Step 1 - updation of posterior probability for the component filters
+                predicted_observation = o.filters{i}.get_predicted_observation();
+                innovation = observation - predicted_observation;
+                innovation_covariance = o.filters{i}.get_innovation_covariance();
+                o.filter_posterior_probabilities(i) = o.filter_posterior_probabilities(i) * mvnpdf(innovation, zeros(size(innovation)), innovation_covariance);
+                % Step 2 - updation of each filter
+                o.filters{i}.update(observation);
+            end
+            o.filter_posterior_probabilities = o.filter_posterior_probabilities / sum(o.filter_posterior_probabilities);
         end
         
         % return the observation corresponding for the multi modal filter.
@@ -69,7 +78,7 @@ classdef StaticMultiModalFilter
                     combined_predicted_observation = combined_predicted_observation + o.filter_posterior_probabilities(i) * predicted_observation;
                 end
             end
-        end 
+        end
         
         % return the innovation covariance for the observations
         function innovation_covariance = get_innovation_covariance(o)
