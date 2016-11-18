@@ -6,8 +6,6 @@ classdef StaticMultiModalFilter
     properties
         filters; % cell array containing the filters making up the multi modal filter
         filter_posterior_probabilities;
-        state; % this is a combined state - combined by using the posterior probabilities
-        covariance; % this is a covariance obtained by a combination
     end
     
     methods
@@ -24,15 +22,13 @@ classdef StaticMultiModalFilter
                 end
             end
             o.filter_posterior_probabilities = parameters.filter_prior_probabilities; % the posterior probabilities are initialized with the prior
-            o.state = initial_state;
-            o.covariance = p.Q;
         end
         
         % for the static multi modal filter, each one of the component filters have to be individually updated
         function o = predict(o)
             num_filters = length(o.filters);
             for i = 1:num_filters
-                o.filters{i}.predict();
+                o.filters{i} = o.filters{i}.predict();
             end
         end
         
@@ -47,7 +43,7 @@ classdef StaticMultiModalFilter
                 innovation_covariance = o.filters{i}.get_innovation_covariance();
                 o.filter_posterior_probabilities(i) = o.filter_posterior_probabilities(i) * mvnpdf(innovation, zeros(size(innovation)), innovation_covariance);
                 % Step 2 - updation of each filter
-                o.filters{i}.update(observation);
+                o.filters{i} = o.filters{i}.update(observation);
             end
             o.filter_posterior_probabilities = o.filter_posterior_probabilities / sum(o.filter_posterior_probabilities);
         end
