@@ -28,9 +28,12 @@ classdef StaticMultiModalFilter
             o.covariance = o.Q;
         end
         
+        % for the static multi modal filter, each one of the component filters have to be individually updated
         function o = predict(o)
-            o.predicted_state = o.A * o.state;
-            o.predicted_covariance = o.A * o.covariance * o.A' + o.Q;
+            num_filters = length(o.filters);
+            for i = 1:num_filters
+                o.filters{i}.predict();
+            end
         end
         
         % state update for a single observation - such as in the case of GNN
@@ -46,18 +49,31 @@ classdef StaticMultiModalFilter
             num_filters = length(o.filters);
             for i = 1:num_filters
                 observation = o.filters{i}.get_observation();
-                combined_observation = combined_observation + o.filter_posterior_probabilities(i) * observation;
+                if i == 1
+                    combined_observation = o.filter_posterior_probabilities(i) * observation;
+                else
+                    combined_observation = combined_observation + o.filter_posterior_probabilities(i) * observation;
+                end
             end
         end
         
         % return the predicted observation
-        function predicted_observation = get_predicted_observation(o)
-            predicted_observation = o.C * o.predicted_state;
+        % the predicted observations from all the filters are combined using the posterior probabilities
+        function combined_predicted_observation = get_predicted_observation(o)
+            num_filters = length(o.filters);
+            for i = 1:num_filters
+                predicted_observation = o.filters{i}.get_predicted_observation();
+                if i == 1
+                    combined_predicted_observation = o.filter_posterior_probabilities(i) * predicted_observation;
+                else
+                    combined_predicted_observation = combined_predicted_observation + o.filter_posterior_probabilities(i) * predicted_observation;
+                end
+            end
         end 
         
         % return the innovation covariance for the observations
         function innovation_covariance = get_innovation_covariance(o)
-            innovation_covariance = o.C * o.predicted_covariance * o.C' + o.R;
+            innovation_covariance = 0;
         end
     end
 end
