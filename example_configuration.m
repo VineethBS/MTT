@@ -23,6 +23,25 @@ filter_parameters.R = 1;
 
 filter_parameters.rest_of_initial_state = [0
                                            0];
+                                       
+% filter parameters for Multi Step Kalman Filter
+filter_type = 'multistepkalmanfilter';
+
+filter_parameters.A = [1 dt dt^2
+                       0 1 dt
+                       0 0 1];
+                   
+filter_parameters.C = [1 0 0];
+
+filter_parameters.Q = [1 0 0;
+                       0 1 0;
+                       0 0 1];
+                   
+filter_parameters.R = 1;
+
+filter_parameters.rest_of_initial_state = [0
+                                           0];
+filter_parameters.step_size = 1;
 
 % filter parameters for Extended Kalman Filter
 filter_type = 'extendedkalmanfilter';
