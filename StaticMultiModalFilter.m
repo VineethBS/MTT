@@ -9,7 +9,7 @@ classdef StaticMultiModalFilter
     end
     
     methods
-        function o = StaticMultiModalFilter(parameters, initial_observation)
+        function o = StaticMultiModalFilter(parameters, time, initial_observation)
             num_filters = length(parameters.filters);
             for i = 1:num_filters
                 if strcmp(parameters.filters{i}, 'kalmanfilter')

@@ -21,7 +21,7 @@ classdef ExtendedKalmanFilter
     end
     
     methods
-        function o = ExtendedKalmanFilter(parameters, initial_observation)
+        function o = ExtendedKalmanFilter(parameters, time, initial_observation)
             o.f = parameters.f;
             o.F = parameters.F;
             o.h = parameters.h;

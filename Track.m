@@ -12,17 +12,17 @@ classdef Track
     end
     
     methods
-        function o = Track(filter_type, filter_parameters, initial_observation)
+        function o = Track(filter_type, filter_parameters, time, initial_observation)
             if strcmp(filter_type,'kalmanfilter')
-                o.filter = KalmanFilter(filter_parameters, initial_observation);
+                o.filter = KalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'alphabetafilter')
-                o.filter = AlphaBetaFilter(filter_parameters, initial_observation);
+                o.filter = AlphaBetaFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'extendedkalmanfilter')
-                o.filter = ExtendedKalmanFilter(filter_parameters, initial_observation);
+                o.filter = ExtendedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'unscentedkalmanfilter')
-                o.filter = UnscentedKalmanFilter(filter_parameters, initial_observation);
+                o.filter = UnscentedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'staticmultimodal')
-                o.filter = StaticMultiModalFilter(filter_parameters, initial_observation);
+                o.filter = StaticMultiModalFilter(filter_parameters, time, initial_observation);
             end
             o.sequence_times_observations = [];
             o.sequence_observations = {};

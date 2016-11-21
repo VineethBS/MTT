@@ -13,7 +13,7 @@ for i = 1:num_of_observations
     
     if data_association_matrix(i, end) == 1
         if gate_membership_matrix(i, end) == 1
-            t = Track(o.filter_type, o.filter_parameters, current_observation);
+            t = Track(o.filter_type, o.filter_parameters, time, current_observation);
             t = t.record_first_observation(time);
             t = t.record_associated_observation(time, current_observation);
         else

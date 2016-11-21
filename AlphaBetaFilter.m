@@ -19,7 +19,7 @@ classdef AlphaBetaFilter
     
     methods
         % gobs and gvel are vectors with all ones of each with the dimension of observations
-        function o = AlphaBetaFilter(parameters, initial_observation)
+        function o = AlphaBetaFilter(parameters, time, initial_observation)
             o.A = parameters.A;
             o.C = parameters.C;
             o.gain_observations = parameters.gain_observations;

@@ -18,7 +18,7 @@ classdef KalmanFilter
     end
     
     methods
-        function o = KalmanFilter(parameters, initial_observation)
+        function o = KalmanFilter(parameters, time, initial_observation)
             o.A = parameters.A;
             o.C = parameters.C;
             o.Q = parameters.Q;
