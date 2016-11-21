@@ -38,7 +38,7 @@ classdef ExtendedKalmanFilter
             o.predicted_covariance = o.F(o.state) * o.covariance * o.F(o.state)' + o.Q;
         end
         
-        function o = update(o, observation)
+        function o = update(o, time, observation)
             o.kalman_gain = o.predicted_covariance * o.H(o.predicted_state)' * inv(o.H(o.predicted_state) * o.predicted_covariance * o.H(o.predicted_state)' + o.R);
             o.state = o.predicted_state + o.kalman_gain * (observation - o.h(o.predicted_state));
             o.covariance = o.predicted_covariance - o.kalman_gain * o.H(o.predicted_state) * o.predicted_covariance;

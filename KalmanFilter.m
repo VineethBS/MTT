@@ -34,7 +34,7 @@ classdef KalmanFilter
         end
         
         % state update for a single observation - such as in the case of GNN
-        function o = update(o, observation)
+        function o = update(o, time, observation)
             o.kalman_gain = o.predicted_covariance * o.C' * inv(o.C * o.predicted_covariance * o.C' + o.R);
             o.state = o.predicted_state + o.kalman_gain * (observation - o.C * o.predicted_state);
             o.covariance = o.predicted_covariance - o.kalman_gain * o.C * o.predicted_covariance;

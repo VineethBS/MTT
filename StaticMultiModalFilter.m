@@ -34,7 +34,7 @@ classdef StaticMultiModalFilter
         
         % update for a single observation
         % the update step is split into two, each component filter has to be updated separately
-        function o = update(o, observation)
+        function o = update(o, time, observation)
             num_filters = length(o.filters);
             for i = 1:num_filters
                 % Step 1 - updation of posterior probability for the component filters
@@ -43,7 +43,7 @@ classdef StaticMultiModalFilter
                 innovation_covariance = o.filters{i}.get_innovation_covariance();
                 o.filter_posterior_probabilities(i) = o.filter_posterior_probabilities(i) * mvnpdf(innovation, zeros(size(innovation)), innovation_covariance);
                 % Step 2 - updation of each filter
-                o.filters{i} = o.filters{i}.update(observation);
+                o.filters{i} = o.filters{i}.update(time, observation);
             end
             o.filter_posterior_probabilities = o.filter_posterior_probabilities / sum(o.filter_posterior_probabilities);
         end
