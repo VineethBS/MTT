@@ -58,8 +58,8 @@ classdef Track
             o.filter = o.filter.update(time, observation);
         end
         
-        function o = update_with_multiple_observations(o, observations, observation_probability, probability_no_assoc_observation)
-            o.filter = o.filter.update_with_multiple_observations(observations, observation_probability, probability_no_assoc_observation);
+        function o = update_with_multiple_observations(o, time, observations, observation_probability, probability_no_assoc_observation)
+            o.filter = o.filter.update_with_multiple_observations(time, observations, observation_probability, probability_no_assoc_observation);
         end
         
         function o = split_track(o)

@@ -49,7 +49,7 @@ classdef KalmanFilter
         % Note that there is an error in eqs 2.12 (the transpose of the Wk term has to be taken)
         % Note that under JPDA the update in the posterior probability is only approximated by the state and covariance
         % updates.
-        function o = update_with_multiple_observations(o, observations, observation_probability, probability_no_assoc_observation)
+        function o = update_with_multiple_observations(o, time, observations, observation_probability, probability_no_assoc_observation)
             num_observations = length(observations);
             predicted_observation = o.get_predicted_observation();
             combined_innovation = zeros(length(predicted_observation), 1);
