@@ -54,8 +54,8 @@ classdef Track
             o.sequence_observations{end + 1} = observation;
         end
         
-        function o = update(o, observation)
-            o.filter = o.filter.update(observation);
+        function o = update(o, time, observation)
+            o.filter = o.filter.update(time, observation);
         end
         
         function o = update_with_multiple_observations(o, observations, observation_probability, probability_no_assoc_observation)
