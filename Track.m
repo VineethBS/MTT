@@ -23,6 +23,8 @@ classdef Track
                 o.filter = UnscentedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'staticmultimodal')
                 o.filter = StaticMultiModalFilter(filter_parameters, time, initial_observation);
+            elseif strcmp(filter_type, 'multistepkalmanfilter')
+                o.filter = MultiStepUpdateKalmanFilter(filter_parameters, time, initial_observation);
             end
             o.sequence_times_observations = [];
             o.sequence_observations = {};
