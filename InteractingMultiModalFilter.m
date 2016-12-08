@@ -3,6 +3,11 @@ classdef InteractingMultiModalFilter
     %   A interacting multi modal filter consists of a number of filters
     %   Each filter has an associated probability of being the correct filter
     %   A weighted combination of the constituent filters is used for state estimation and prediction
+    %   The implementation follows the development of IMM in the book by Estimation with applications to tracking by
+    %   Bar-Shalom.
+    
+    % TODO: Can only use rectangular or spherical gating with this implementation of IMM. Extend to use with JPDA
+    
     properties
         filters; % cell array containing the filters making up the multi modal filter
         filter_posterior_probabilities;
@@ -10,9 +15,12 @@ classdef InteractingMultiModalFilter
         num_filters;
         mixed_filter_inputs_state;
         mixed_filter_inputs_covariance;
+        normalization_cbar;
     end
     
     methods
+        % currently the IMM filter can only use Kalman filters as the component filters
+        % we have to make sure that the state dimension of the Kalman filters are all the same
         function o = InteractingMultiModalFilter(parameters, time, initial_observation)
             o.num_filters = length(parameters.filters);
             for i = 1:o.num_filters
@@ -27,16 +35,42 @@ classdef InteractingMultiModalFilter
             end
             o.filter_posterior_probabilities = parameters.filter_prior_probabilities; % the posterior probabilities are initialized with the prior
             o.state_transition_probabilities = parameters.state_transition_probabilities;
-            o.mixed_filter_inputs = [];
         end
         
+        % before the prediction step, the interaction/mixing of the last states from the component KFs are used to
+        % obtain new states and covariances
+        function o = predict(o)
+            o = o.mix_states();
+            o = o.set_mixed_inputs();
+            for i = 1:o.num_filters
+                o.filters{i} = o.filters{i}.predict();
+            end
+        end
+        
+        % update for a single observation
+        % the update step is split into two, each component filter has to be updated separately
+        function o = update(o, time, observation)
+            % Calculation of likelihoods and updation of posterior probability
+            for i = 1:o.num_filters                
+                % Step 1 - updation of posterior probability for the component filters
+                predicted_observation = o.filters{i}.get_predicted_observation();
+                innovation = observation - predicted_observation;
+                innovation_covariance = o.filters{i}.get_innovation_covariance();
+                likelihood = mvnpdf(innovation, zeros(o.num_filters, 1), innovation_covariance);
+                o.filter_posterior_probabilities(i) = o.normalization_cbar(i) * likelihood;
+                % Step 2 - updation of each filter
+                o.filters{i} = o.filters{i}.update(time, observation);
+            end
+            o.filter_posterior_probabilities = o.filter_posterior_probabilities / sum(o.filter_posterior_probabilities);
+        end
+            
         % mixing or interaction of the states for the IMM filter
         function o = mix_states(o)
-            normalization_cbar = o.state_transition_probabilities' * o.filter_posterior_probabilities;
+            o.normalization_cbar = o.state_transition_probabilities' * o.filter_posterior_probabilities;
             mu_ij = zeros(o.num_filters, o.num_filters);
             for i = 1:o.num_filters
                 for j = 1:o.num_filters
-                    mu_ij(i, j) = o.state_transition_probabilities(i, j) * o.filter_posterior_probabilities(j) / normalization_cbar(j);
+                    mu_ij(i, j) = o.state_transition_probabilities(i, j) * o.filter_posterior_probabilities(j) / o.normalization_cbar(j);
                 end
             end
             
@@ -46,7 +80,11 @@ classdef InteractingMultiModalFilter
             for i = 1:o.num_filters
                 for j = 1:o.num_filters
                     filter_last_state = o.filters{i}.get_state();
-                    o.mixed_filter_inputs_state{i} = o.mixed_filter_inputs_state{i} + mu_ij(j, i) * filter_last_state;
+                    if j == 1
+                        o.mixed_filter_inputs_state{i} = mu_ij(j, i) * filter_last_state;
+                    else
+                        o.mixed_filter_inputs_state{i} = o.mixed_filter_inputs_state{i} + mu_ij(j, i) * filter_last_state;
+                    end
                 end
             end 
             
@@ -54,61 +92,28 @@ classdef InteractingMultiModalFilter
                 for j = 1:o.num_filters
                     filter_last_state = o.filters{i}.get_state();
                     state_difference = filter_last_state - o.mixed_filter_inputs_state{i};
-                    o.mixed_filter_inputs_covariance{i} = o.mixed_filter_inputs_covariance{i} + ...
-                        mu_ij(j, i) * (o.filters{i}.get_covariance() + state_difference * state_difference';)
+                    if j == 1
+                        o.mixed_filter_inputs_covariance{i} = mu_ij(j, i) * (o.filters{i}.get_covariance() + state_difference * state_difference');
+                    else
+                        o.mixed_filter_inputs_covariance{i} = o.mixed_filter_inputs_covariance{i} + ...
+                            mu_ij(j, i) * (o.filters{i}.get_covariance() + state_difference * state_difference');
+                    end
                 end
             end
-            
+        end
+
+        % set the filter state and covariance to be the mixed state and covariance
+        function o = set_mixed_inputs(o)
             for i = 1:o.num_filters
                 o.filters{i} = o.filters{i}.set_state(o.mixed_filter_inputs_state{i});
                 o.filters{i} = o.filters{i}.set_covariance(o.mixed_filter_inputs_covariance{i});
             end
-            
-            for i = 1:o.num_filters
-                o.filters{i} = o.filters{i}.predict();
-                o.filters{i} = o.filters{i}.update(time, observation);
-            end
-            
-            % Calculation of likelihoods and updation of posterior probability
-            likelihood = zeros(o.num_filters, 1);
-            normalization_c = 0;
-            for i = 1:o.num_filters
-                innovation_covariance = o.filters{i}.get_innovation_covariance();
-                innovation = observation - o.filters{i}.get_predicted_observation();
-                likelihood(i) = mvnpdf(innovation, zeros(o.num_filters, 1), innovation_covariance);
-                normalization_c = normalization_c + likelihood(i) * normalization_cbar(i);
-            end
-            
-            % Update the posterior probabilities
-            for i = 1:o.num_filters
-                o.filter_posterior_probabilities(i) = 1/normalization_c * normalization_cbar(i) * likelihood(i);
-            end
-        end
-        
-        % need a predict function here!
-        
-        
-        % update for a single observation
-        % the update step is split into two, each component filter has to be updated separately
-        function o = update(o, time, observation)
-            num_filters = length(o.filters);
-            for i = 1:num_filters
-                % Step 1 - updation of posterior probability for the component filters
-                predicted_observation = o.filters{i}.get_predicted_observation();
-                innovation = observation - predicted_observation;
-                innovation_covariance = o.filters{i}.get_innovation_covariance();
-                o.filter_posterior_probabilities(i) = o.filter_posterior_probabilities(i) * mvnpdf(innovation, zeros(size(innovation)), innovation_covariance);
-                % Step 2 - updation of each filter
-                o.filters{i} = o.filters{i}.update(time, observation);
-            end
-            o.filter_posterior_probabilities = o.filter_posterior_probabilities / sum(o.filter_posterior_probabilities);
         end
         
         % return the observation corresponding for the multi modal filter.
         % the observations from all the filters are combined using the posterior probabilities
         function combined_observation = get_observation(o)
-            num_filters = length(o.filters);
-            for i = 1:num_filters
+            for i = 1:o.num_filters
                 observation = o.filters{i}.get_observation();
                 if i == 1
                     combined_observation = o.filter_posterior_probabilities(i) * observation;
@@ -120,9 +125,10 @@ classdef InteractingMultiModalFilter
         
         % return the predicted observation
         % the predicted observations from all the filters are combined using the posterior probabilities
+        % note that in order to get the "correct" predicted observations, this has to be called before the update
+        % function is called
         function combined_predicted_observation = get_predicted_observation(o)
-            num_filters = length(o.filters);
-            for i = 1:num_filters
+            for i = 1:o.num_filters
                 predicted_observation = o.filters{i}.get_predicted_observation();
                 if i == 1
                     combined_predicted_observation = o.filter_posterior_probabilities(i) * predicted_observation;
