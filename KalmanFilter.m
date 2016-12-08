@@ -69,7 +69,26 @@ classdef KalmanFilter
             o.covariance = o.predicted_covariance - (1 - probability_no_assoc_observation) * o.kalman_gain * o.C * o.predicted_covariance + ...
                 o.kalman_gain * innovation_sample_covariance * o.kalman_gain';
         end
-            
+        % return the current state
+        function state = get_state(o)
+            state = o.state;
+        end
+        
+        % set the current state - to be used by IMM
+        function o = set_state(o, state)
+            o.state = state;
+        end
+        
+        % return the current covariance
+        function covariance = get_covariance(o)
+            covariance = o.covariance;
+        end
+        
+        % set the current covariance - to be used by IMM
+        function o = set_covariance(o, covariance)
+            o.covariance = covariance;
+        end
+        
         % return the observation corresponding to the current state of the filter
         function observation = get_observation(o)
             observation = o.C * o.state;
