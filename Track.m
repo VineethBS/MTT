@@ -18,11 +18,14 @@ classdef Track
             elseif strcmp(filter_type, 'alphabetafilter')
                 o.filter = AlphaBetaFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'extendedkalmanfilter')
+                initial_observation = filter_parameters.hinv(initial_observation); % conversion into the actual state co-ordinates
                 o.filter = ExtendedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'unscentedkalmanfilter')
                 o.filter = UnscentedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'staticmultimodal')
                 o.filter = StaticMultiModalFilter(filter_parameters, time, initial_observation);
+            elseif strcmp(filter_type, 'interactingmultimodal')
+                o.filter = InteractingMultiModalFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'multistepkalmanfilter')
                 o.filter = MultiStepUpdateKalmanFilter(filter_parameters, time, initial_observation);
             end
