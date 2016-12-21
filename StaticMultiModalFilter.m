@@ -18,7 +18,7 @@ classdef StaticMultiModalFilter
                     p.Q = parameters.filterparameters{i}.Q;
                     p.R = parameters.filterparameters{i}.R;
                     p.rest_of_initial_state = parameters.filterparameters{i}.rest_of_initial_state;
-                    o.filters{i} = KalmanFilter(p, initial_observation);
+                    o.filters{i} = KalmanFilter(p, time, initial_observation);
                 end
             end
             o.filter_posterior_probabilities = parameters.filter_prior_probabilities; % the posterior probabilities are initialized with the prior
