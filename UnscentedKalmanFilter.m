@@ -40,7 +40,7 @@ classdef UnscentedKalmanFilter
     end
     
     methods
-        function o = UnscentedKalmanFilter(parameters, initial_observation)
+        function o = UnscentedKalmanFilter(parameters, time, initial_observation)
             o.f = parameters.f;
             o.h = parameters.h;
             o.Q = parameters.Q;
@@ -64,7 +64,7 @@ classdef UnscentedKalmanFilter
             o.c = sqrt(o.c);
         end
         
-        function [y, transformed_sigmapoints, P, transformed_deviations] = ut(f, sigma_points, Wm, Wc, R)
+        function [y, transformed_sigmapoints, P, transformed_deviations] = ut(o, f, sigma_points, Wm, Wc, R)
             % Unscented Transformation
             % Input:
             %            f: nonlinear map used for the transformation
@@ -91,11 +91,11 @@ classdef UnscentedKalmanFilter
                 y = y + Wm(k) * transformed_sigmapoints(:,k);
             end
             
-            transformed_deviations = transformed_sigmapoints - y(:, ones(1, L));
+            transformed_deviations = transformed_sigmapoints - y(:, ones(1, number_sigmapoints));
             P = transformed_deviations * diag(Wc) * transformed_deviations' + R;
         end
         
-        function sigma_points = sigma_points(x, P, c)
+        function sigma_points = sigma_points(o, x, P, c)
             % Sigma points around reference point
             % Inputs:
             %       x: reference point
@@ -112,20 +112,26 @@ classdef UnscentedKalmanFilter
         function o = predict(o)
             sigma_points = o.sigma_points(o.state, o.covariance, o.c);
             [o.predicted_state, X1, o.predicted_covariance, X2] = o.ut(o.f, sigma_points, o.Wm, o.Wc, o.Q);
-            [o.predicted_observation, ~, o.observation_covariance, Z2] = ut(o.h, X1, o.Wm, o.Wc, o.R);
+            [o.predicted_observation, ~, o.observation_covariance, Z2] = o.ut(o.h, X1, o.Wm, o.Wc, o.R);
             o.cross_covariance = X2 * diag(o.Wc) * Z2';
         end
         
-        function o = update(o, observation)
+        function o = update(o, time, observation)
             o.kalman_gain = o.cross_covariance * inv(o.observation_covariance);
             o.state = o.predicted_state + o.kalman_gain*(observation-o.predicted_observation); 
             o.covariance = o.predicted_covariance - o.kalman_gain * o.cross_covariance'; 
         end
         
         % return the observation corresponding to the current state of the filter
-        function predicted_observation = get_observation(o)
-            predicted_observation = o.predicted_observation;
+        function observation = get_observation(o)
+            observation = o.h(o.state);            
         end
+        
+        % return the predicted observation
+        function predicted_observation = get_predicted_observation(o)
+            predicted_observation = o.h(o.predicted_state);
+        end 
+        
     end
 end
 
