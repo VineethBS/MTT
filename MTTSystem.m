@@ -105,6 +105,9 @@ classdef MTTSystem
                 elseif strcmp(instruction, 'savetracks')
                     temp = Reporting(o.post_MTT_run_parameters{i});
                     temp.save_tracks(tracks);
+                elseif strcmp(instruction, 'computemetrics')
+                    temp = Metrics(o.post_MTT_run_parameters{i});
+                    temp.compute_metrics(tracks);
                 end
             end
         end
