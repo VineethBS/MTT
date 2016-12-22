@@ -21,6 +21,7 @@ classdef Track
                 initial_observation = filter_parameters.hinv(initial_observation); % conversion into the actual state co-ordinates
                 o.filter = ExtendedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'unscentedkalmanfilter')
+                initial_observation = filter_parameters.hinv(initial_observation); % conversion into the actual state co-ordinates
                 o.filter = UnscentedKalmanFilter(filter_parameters, time, initial_observation);
             elseif strcmp(filter_type, 'staticmultimodal')
                 o.filter = StaticMultiModalFilter(filter_parameters, time, initial_observation);
