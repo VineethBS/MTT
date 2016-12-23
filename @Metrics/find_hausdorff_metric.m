@@ -31,26 +31,14 @@ end
 n = size(X,2);
 m = size(Y,2);
 
-%Calculate cost/weight matrix for pairings - fast method with vectorization
-XX = repmat(X,[1 m]);
-YY = reshape(repmat(Y,[n 1]),[size(Y,1) n*m]);
-% D  = reshape(sqrt(sum((XX-YY).^2)),[n m]);
-
 %Calculate cost/weight matrix for pairings - slow method with for loop
 D= zeros(n,m);
 for j=1:m
-    %     D(:,j)= sqrt(sum( ( repmat(Y(:,j),[1 n])- X ).^2 )');
-    D(:,j)= sqrt(( ( repmat(Y(:,j),[1 n])- X ).^2 )');
+    D(:,j)= sqrt(sum( ( repmat(Y(:,j),[1 n])- X ).^2 )');
 end
-% D= min(c,D).^p;
 
 %Compute optimal assignment and cost using the Hungarian algorithm
 [assignment,cost]= o.hungarian_algorithm(D); %#ok<*NASGU,*ASGLU>
 
 %Calculate final distance
 dist = max([max(min(D,[],2)),max(min(D,[],1))]);
-
-%Output components if called for in varargout
-if nargout == 2
-    varargout(1)= {assignment};
-end

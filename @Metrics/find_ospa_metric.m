@@ -29,7 +29,7 @@ m = size(Y,2);
 %Calculate cost/weight matrix for pairings - slow method with for loop
 D= zeros(n,m);
 for j=1:m
-    D(:,j)= sqrt(( ( repmat(Y(:,j),[1 n]) - X ).^2 )');
+    D(:,j)= sqrt(sum((repmat(Y(:,j),[1 n]) - X).^2))';
 end
 D= min(c,D).^p;
 
