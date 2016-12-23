@@ -90,6 +90,7 @@ data_association_type = 'JPDA';
 data_association_parameters.detection_probability = 0.9;
 data_association_parameters.false_alarm_rate = 0.05;
 
+% parameters for track maintenance
 track_maintenance_type = 'NOutOfM';
 track_maintenance_parameters.N = 2;
 track_maintenance_parameters.M = 5;
@@ -97,10 +98,15 @@ track_maintenance_parameters.confirm_threshold = 3;
 track_maintenance_parameters.confirm_M = 3;
 track_maintenance_parameters.confirm_N = 1;
 
+% parameters for post processing
+
+% velocity based thresholding
 postprocessing_parameters.velocity_threshold_parameters.velocity_threshold = 10;
 postprocessing_parameters.velocity_threshold_parameters.direction = 'greater';
+% remove tracks based on number of associations
 postprocessing_parameters.atleastN_parameters.N = 10;
 
+% parameters for visualization
 visualization1D_parameters.filename = 'example_data.csv';
 visualization1D_parameters.plot_input = 1;
 visualization1D_parameters.plot_tracks = 1;
@@ -108,8 +114,22 @@ visualization1D_parameters.in_field_separator = ',';
 visualization1D_parameters.plottype_input = 'ro';
 visualization1D_parameters.plottype_track = 'k';
 
-post_MTT_run_sequence = {'atleastN','velocitythreshold','plot1D'};
+% parameters for computation of metrics
+metriccomputation_parameters.original_tracks_file = 'actual_object_trajectories.csv';
+metriccomputation_parameters.in_field_separator = ',';
+metriccomputation_parameters.dimension_observations = 3;
+metriccomputation_parameters.compute_ospa = 1;
+metriccomputation_parameters.compute_omat = 1;
+metriccomputation_parameters.compute_hausdorff = 1;
+metriccomputation_parameters.plot_metrics = 1;
+metriccomputation_parameters.ospa_parameters.c = 10;
+metriccomputation_parameters.ospa_parameters.p = 0.5;
+metriccomputation_parameters.omat_parameters.c = 10;
+
+% how to run the post MTT processing sequence
+post_MTT_run_sequence = {'atleastN','velocitythreshold','plot1D', 'computemetrics'};
 post_MTT_run_parameters{1} = postprocessing_parameters;
 post_MTT_run_parameters{2} = postprocessing_parameters;
 post_MTT_run_parameters{3} = visualization1D_parameters;
+post_MTT_run_parameters{4} = metriccomputation_parameters;
 
