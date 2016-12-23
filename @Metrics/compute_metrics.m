@@ -1,0 +1,97 @@
+function o = compute_metrics(o, tracks)
+
+if exist(filename, 'file') == 2
+    fh = fopen(filename);
+else
+    error('%s does not exist!', filename);
+    return;
+end
+
+% Accumulate the times and observations from all the tracks into a single data structure
+times_from_tracks = [];
+observations_from_tracks = [];
+
+for i = 1:length(tracks)
+    current_track = tracks{i};
+    for j = 1:length(current_track.sequence_times_observations)
+        current_track_time = current_track.sequence_times_observations[j];
+        current_track_observations = current_track.sequence_observations{j};
+        
+        index = find(times_from_tracks == current_track_time, 1);
+        if isempty(index)
+            times_from_tracks(end + 1) = current_track_time;
+            index = find(times_from_tracks == current_track_time, 1);
+            observations_from_tracks{index}{1} = current_track_observations;
+        else
+            observations_from_tracks{index}{end + 1} = current_track_observations; % TODO: logic for handling the case where this is empty; shouldn't happen
+        end
+    end
+end
+
+while 1
+    line = fgetl(fh);
+    if ~ischar(line)
+        break;
+    end
+    
+    tokens = strsplit(line, in_field_separator);
+    % convert all tokens to double
+    numeric_tokens = zeros(1, length(tokens));
+    for i = 1:length(tokens)
+        numeric_tokens(i) = str2double(tokens{i});
+    end
+    
+    time = numeric_tokens(1);
+    numeric_tokens = numeric_tokens(2:end);
+    % If the number of numeric tokens is not a multiple of dimension_observations then continue on to the next line
+    if mod(length(numeric_tokens), dimension_observations) ~= 0
+        continue;
+    end
+    
+    % arrange the observations at the current time as a matrix
+    num_observations = floor(length(numeric_tokens)/dimension_observations); % this should be an integer
+    observations_matrix = reshape(numeric_tokens, dimension_observations, num_observations);
+    
+    index = find(times_from_tracks == time, 1);
+    track_observations_matrix = cell2mat(observations_from_tracks{index});
+    
+    o.time_sequence(end + 1) = time;
+    if o.compute_ospa
+       dist = o.find_ospa_metric(observations_matrix, track_observations_matrix, o.ospa_parameters.c, o.ospa_parameters.p);
+       o.ospa_metric(end + 1) = dist;
+    end
+    
+    if o.compute_omat
+        dist = o.find_ospa_metric(observations_matrix, track_observations_matrix, o.omat_parameters.c);
+        o.omat_metric(end + 1) = dist;
+    end
+    
+    if o.compute_hausdorff
+        dist = o.find_ospa_metric(observations_matrix, track_observations_matrix);
+        o.hausdorff_metric(end + 1) = dist;
+    end
+end
+
+if o.compute_ospa
+    o.average_ospa_metric = mean(o.ospa_metric);
+end
+
+if o.compute_omat
+    o.average_omat_metric = mean(o.omat_metric);
+end
+
+if o.compute_hausdorff
+    o.average_hausdorff_metric = mean(o.hausdorff_metric);
+end
+
+if o.plot_metrics
+    if o.compute_ospa
+        plot(o.time_seuqence, o.ospa_metric, 'r');
+    end
+    if o.compute_omat
+        plot(o.time_sequence, o.omat_metric, 'b');
+    end
+    if o.compute_hausdorff
+        plot(o.time_sequence, o.hausdorff_metric, 'k');
+    end
+end
