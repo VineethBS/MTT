@@ -39,7 +39,7 @@ classdef Metrics
             
             o.ospa_parameters.c = parameters.ospa_parameters.c;
             o.ospa_parameters.p = parameters.ospa_parameters.p;
-            o.omat_parameters.p = parameters.omat_parameters.p;
+            o.omat_parameters.c = parameters.omat_parameters.c;
             
             o.time_sequence = [];
             o.ospa_metric = [];
