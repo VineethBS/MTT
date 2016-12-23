@@ -100,5 +100,6 @@ if o.plot_metrics
     if o.compute_hausdorff
         plot(o.time_sequence, o.hausdorff_metric, 'k');
     end
+    legend(sprintf('OSPA %.4f', o.average_ospa_metric), sprintf('OMAT %.4f', o.average_omat_metric), sprintf('Hausdorff %.4f', o.average_hausdorff_metric));
     hold off;
 end
