@@ -68,3 +68,5 @@ if plot_tracks == 1
         end
     end
 end
+
+hold off;

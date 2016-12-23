@@ -56,3 +56,5 @@ if plot_tracks == 1
         plot(tracks{i}.sequence_times, cell2mat(tracks{i}.sequence_predicted_observations), plottype_track);
     end
 end
+
+hold off;
