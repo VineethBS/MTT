@@ -1,9 +1,9 @@
 function o = compute_metrics(o, tracks)
 
-if exist(filename, 'file') == 2
-    fh = fopen(filename);
+if exist(o.original_tracks_file, 'file') == 2
+    fh = fopen(o.original_tracks_file);
 else
-    error('%s does not exist!', filename);
+    error('%s does not exist!', o.original_tracks_file);
     return;
 end
 
@@ -14,7 +14,7 @@ observations_from_tracks = [];
 for i = 1:length(tracks)
     current_track = tracks{i};
     for j = 1:length(current_track.sequence_times_observations)
-        current_track_time = current_track.sequence_times_observations[j];
+        current_track_time = current_track.sequence_times_observations(j);
         current_track_observations = current_track.sequence_observations{j};
         
         index = find(times_from_tracks == current_track_time, 1);
@@ -34,7 +34,7 @@ while 1
         break;
     end
     
-    tokens = strsplit(line, in_field_separator);
+    tokens = strsplit(line, o.in_field_separator);
     % convert all tokens to double
     numeric_tokens = zeros(1, length(tokens));
     for i = 1:length(tokens)
@@ -44,16 +44,20 @@ while 1
     time = numeric_tokens(1);
     numeric_tokens = numeric_tokens(2:end);
     % If the number of numeric tokens is not a multiple of dimension_observations then continue on to the next line
-    if mod(length(numeric_tokens), dimension_observations) ~= 0
+    if mod(length(numeric_tokens), o.dimension_observations) ~= 0
         continue;
     end
     
     % arrange the observations at the current time as a matrix
-    num_observations = floor(length(numeric_tokens)/dimension_observations); % this should be an integer
-    observations_matrix = reshape(numeric_tokens, dimension_observations, num_observations);
+    num_observations = floor(length(numeric_tokens)/o.dimension_observations); % this should be an integer
+    observations_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
     
     index = find(times_from_tracks == time, 1);
-    track_observations_matrix = cell2mat(observations_from_tracks{index});
+    if isempty(index)
+        track_observations_matrix = [];
+    else
+        track_observations_matrix = cell2mat(observations_from_tracks{index});
+    end
     
     o.time_sequence(end + 1) = time;
     if o.compute_ospa
@@ -62,12 +66,12 @@ while 1
     end
     
     if o.compute_omat
-        dist = o.find_ospa_metric(observations_matrix, track_observations_matrix, o.omat_parameters.c);
+        dist = o.find_omat_metric(observations_matrix, track_observations_matrix, o.omat_parameters.c);
         o.omat_metric(end + 1) = dist;
     end
     
     if o.compute_hausdorff
-        dist = o.find_ospa_metric(observations_matrix, track_observations_matrix);
+        dist = o.find_hausdorff_metric(observations_matrix, track_observations_matrix);
         o.hausdorff_metric(end + 1) = dist;
     end
 end
@@ -85,8 +89,10 @@ if o.compute_hausdorff
 end
 
 if o.plot_metrics
+    figure;
+    hold on;
     if o.compute_ospa
-        plot(o.time_seuqence, o.ospa_metric, 'r');
+        plot(o.time_sequence, o.ospa_metric, 'r');
     end
     if o.compute_omat
         plot(o.time_sequence, o.omat_metric, 'b');
@@ -94,4 +100,5 @@ if o.plot_metrics
     if o.compute_hausdorff
         plot(o.time_sequence, o.hausdorff_metric, 'k');
     end
+    hold off;
 end
