@@ -82,7 +82,9 @@ classdef MTTSystem
                 observations{i} = observation_matrix(:, i);
             end
             
-            o.MTT = o.MTT.process_one_observation(time, observations);
+            if sum(sum(observation_matrix)) > 0
+                o.MTT = o.MTT.process_one_observation(time, observations);
+            end
         end
         
         % run post processing, visualization, and reporting tasks according to the instructions in post_MTT_run_sequence

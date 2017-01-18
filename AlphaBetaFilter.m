@@ -36,6 +36,7 @@ classdef AlphaBetaFilter
         
         function o = update(o, time, observation)
             residual = observation - o.get_observation();
+            residual = [residual;residual];
             gain = [o.alpha * o.gain_observations; o.beta * o.gain_velocity] .* residual;
             o.state = o.predicted_state + gain;          
         end

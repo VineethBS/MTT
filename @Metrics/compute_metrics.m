@@ -13,9 +13,10 @@ observations_from_tracks = [];
 
 for i = 1:length(tracks)
     current_track = tracks{i};
-    for j = 1:length(current_track.sequence_times_observations)
-        current_track_time = current_track.sequence_times_observations(j);
-        current_track_observations = current_track.sequence_observations{j};
+%     for j = 1:length(current_track.sequence_times_observations)
+     for j = 1:length(current_track.sequence_times)
+        current_track_time = current_track.sequence_times(j);
+        current_track_observations = current_track.sequence_updated_state{j};
         
         index = find(times_from_tracks == current_track_time, 1);
         if isempty(index)
@@ -100,6 +101,10 @@ if o.plot_metrics
     if o.compute_hausdorff
         plot(o.time_sequence, o.hausdorff_metric, 'k');
     end
+    grid on;
+    title('Metric Plot');
+    xlabel('Time(sec)');
+    ylabel('Metric value');
     legend(sprintf('OSPA %.4f', o.average_ospa_metric), sprintf('OMAT %.4f', o.average_omat_metric), sprintf('Hausdorff %.4f', o.average_hausdorff_metric));
     hold off;
 end

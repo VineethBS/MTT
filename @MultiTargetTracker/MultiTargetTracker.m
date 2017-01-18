@@ -44,7 +44,9 @@ classdef MultiTargetTracker
             if strcmp(o.gating_method_type, 'Spherical')
                 o.gating = SphericalGating(gating_method_parameters);
             elseif strcmp(o.gating_method_type, 'Rectangular')
-                o.gating = RectangularGating(gating_method_parameters);
+                
+                 o.gating = RectangularGating(gating_method_parameters,o.filter_type);
+                
             end
             
             if strcmp(o.track_maintenance_type, 'NOutOfM')

@@ -22,7 +22,7 @@ classdef ExtendedKalmanFilter
     
     methods
         function o = ExtendedKalmanFilter(parameters, time, initial_observation)
-            o.f = parameters.f;
+                o.f = parameters.f;
             o.F = parameters.F;
             o.h = parameters.h;
             o.H = parameters.H;            
@@ -44,6 +44,27 @@ classdef ExtendedKalmanFilter
             o.covariance = o.predicted_covariance - o.kalman_gain * o.H(o.predicted_state) * o.predicted_covariance;
         end
         
+         function o = update_with_multiple_observations(o, time, observations, observation_probability, probability_no_assoc_observation)
+            num_observations = length(observations);
+            predicted_observation = o.get_predicted_observation();
+            combined_innovation = zeros(length(predicted_observation), 1);
+            innovation_sample_correlation = zeros(length(predicted_observation)); % matrix of size num of dimensions x num of dimensions
+            for i = 1:num_observations
+                current_observation = observations{i};
+                current_innovation = current_observation - predicted_observation;
+                combined_innovation = combined_innovation + observation_probability(i) * current_innovation;
+                innovation_sample_correlation = innovation_sample_correlation + observation_probability(i) * (current_innovation * current_innovation');
+            end
+            innovation_sample_covariance = innovation_sample_correlation - (combined_innovation * combined_innovation');
+            
+            % updates using the combined innovation
+            observation_covariance = o.H(o.predicted_state) * o.predicted_covariance * o.H(o.predicted_state)' + o.R;
+            o.kalman_gain = o.predicted_covariance * o.H(o.predicted_state)' * inv(observation_covariance);
+            o.state = o.predicted_state + o.kalman_gain * combined_innovation;
+            o.covariance = o.predicted_covariance - (1 - probability_no_assoc_observation) * o.kalman_gain * o.H(o.predicted_state) * o.predicted_covariance + ...
+                o.kalman_gain * innovation_sample_covariance * o.kalman_gain';
+         end
+        
         % return the observation corresponding to the current state of the filter
         function observation = get_observation(o)
             observation = o.h(o.state);            
@@ -53,6 +74,11 @@ classdef ExtendedKalmanFilter
         function predicted_observation = get_predicted_observation(o)
             predicted_observation = o.h(o.predicted_state);
         end 
+        
+       % return the innovation covariance for the observations
+        function innovation_covariance = get_innovation_covariance(o)
+            innovation_covariance = o.H(o.predicted_state) * o.predicted_covariance * o.H(o.predicted_state)' + o.R;
+        end
     end
 end
 

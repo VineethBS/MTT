@@ -29,6 +29,7 @@ for i = 1:num_of_observations
             t = t.record_predicted_observation(time);
             t = t.update(time, current_observation);
             t = t.record_associated_observation(time, current_observation);
+            t = t.record_updated_state(time);
         end
 
         new_tracks{end + 1} = t;
@@ -38,6 +39,7 @@ for i = 1:num_of_observations
                 o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
                 o.list_of_tracks{j} = o.list_of_tracks{j}.update(time, current_observation);
                 o.list_of_tracks{j} = o.list_of_tracks{j}.record_associated_observation(time, current_observation);
+                o.list_of_tracks{j} = o.list_of_tracks{j}.record_updated_state(time);
             end 
         end
     end
@@ -51,6 +53,7 @@ for j = 1:num_of_tracks
         % Option 2 : Use the observation corresponding to the predicted state
         o.list_of_tracks{j} = o.list_of_tracks{j}.update(time, o.list_of_tracks{j}.get_predicted_observation());
         o.list_of_tracks{j} = o.list_of_tracks{j}.record_predicted_observation(time);
+        o.list_of_tracks{j} = o.list_of_tracks{j}.record_updated_state(time);
     end
 end
 

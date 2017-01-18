@@ -9,6 +9,7 @@ classdef Track
         sequence_observations; % the set of observations associated to this track
         sequence_times; % all the time instants during which this track is active
         sequence_predicted_observations; % the observations predicted by the internal state
+        sequence_updated_state;% filtered output values
     end
     
     methods
@@ -51,6 +52,7 @@ classdef Track
         function o = record_first_observation(o, time)
             o.sequence_times = [o.sequence_times, time];
             o.sequence_predicted_observations{end + 1} = o.get_observation(); % since there is no first prediction
+            o.sequence_updated_state{end + 1} = o.get_observation();
         end
         
         % Records an actual observation which has been associated to this
@@ -85,6 +87,11 @@ classdef Track
         
         function innovation_covariance = get_innovation_covariance(o)
             innovation_covariance = o.filter.get_innovation_covariance();
+        end
+        
+        function o = record_updated_state(o, time)
+           
+            o.sequence_updated_state{end + 1} = o.get_observation();
         end
     end
 end
