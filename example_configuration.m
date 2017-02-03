@@ -3,7 +3,12 @@
 dt = 0.1;
 
 dimension_observations = 3;
-field_separator = ' ';
+
+inputfile_parameters.field_separator = ' ';
+inputfile_parameters.time_column = 1;
+inputfile_parameters.observation_column_range = 2:16;
+inputfile_parameters.additional_information = {'snr', 'pointinginformation'};
+inputfile_parameters.additional_information_columns = {17:21, 22:24};
 
 % filter parameters for Kalman Filter
 filter_type = 'kalmanfilter';
@@ -84,3 +89,4 @@ post_MTT_run_parameters{1} = postprocessing_parameters;
 post_MTT_run_parameters{2} = postprocessing_parameters;
 post_MTT_run_parameters{3} = visualization3D_parameters;
 post_MTT_run_parameters{4} = metrics_parameters;
+
