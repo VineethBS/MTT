@@ -4,7 +4,7 @@ classdef MTTSystem
     % the data (through a data file).
     
     properties
-        field_separator; % character
+        inputfile_parameters; % contains information about the formatting of the input file
         configuration_file; % string
         data_file; % string
         MTT; % MTT 
@@ -29,7 +29,7 @@ classdef MTTSystem
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
             o.dimension_observations = dimension_observations;
-            o.field_separator = field_separator;
+            o.inputfileparameters.field_separator = inputfileparameters.field_separator;
             o.post_MTT_run_sequence = post_MTT_run_sequence;
             o.post_MTT_run_parameters = post_MTT_run_parameters;
         end
@@ -57,23 +57,25 @@ classdef MTTSystem
         % run_once - for each line that is read in, converts the obtained tokens to time and numeric tokens, makes a cell array of
         % observations with each element of the cell being an observation and runs the MTT tracker with this observation object.
         function o = run_once(o, tokens)
-            % convert all tokens to double
             numeric_tokens = zeros(1, length(tokens));
             for i = 1:length(tokens)
                 numeric_tokens(i) = str2double(tokens{i});
             end
             
-            time = numeric_tokens(1);
-            numeric_tokens = numeric_tokens(2:end);
+            % ---- Find the time from the line
+            time = numeric_tokens(o.inputfile_parameters.time_column);
+            
+            % ---- Find all the observations from the line and arrange in an array
+            observation_numeric_tokens = numeric_tokens(o.inputfile_parameters.observation_column_range);
             
             % If the number of numeric tokens is not a multiple of dimension_observations then continue on to the next line
-            if mod(length(numeric_tokens), o.dimension_observations) ~= 0
+            if mod(length(observation_numeric_tokens), o.dimension_observations) ~= 0
                 return;
             end
             
-            num_observations = floor(length(numeric_tokens)/o.dimension_observations); % this should be an integer
+            num_observations = floor(length(observation_numeric_tokens)/o.dimension_observations); % this should be an integer
             % For example, if the numeric tokens were 10,20,30,10,20,30  the observation matrix should be [10 10; 20 20; 30 30]
-            observation_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
+            observation_matrix = reshape(observation_numeric_tokens, o.dimension_observations, num_observations);
             
             % the observations to be fed into MTT should be a cell-array
             % each observation is a column vector
@@ -82,8 +84,20 @@ classdef MTTSystem
                 observations{i} = observation_matrix(:, i);
             end
             
+            % ---- Find additional information to be passed
+            additional_information = [];
+            for i = 1:length(o.inputfile_parameters.additional_information)
+                information_type = o.inputfile_parameters.additional_information{i};
+                if strcmp(information_type, 'snr')
+                    additional_information.snr = numeric_tokens(o.inputfile.additional_information_columns{i});
+                elseif strcmp(information_type, 'pointinginformation')
+                    additional_information.pointing_information = numeric_tokens(o.inputfile.additional_information_columns{i});
+                end
+            end
+            
+            % ---- Now call the MTT's process one observation
             if sum(sum(observation_matrix)) > 0
-                o.MTT = o.MTT.process_one_observation(time, observations);
+                o.MTT = o.MTT.process_one_observation(time, observations, additional_information);
             end
         end
         
