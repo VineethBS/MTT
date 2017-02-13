@@ -29,7 +29,7 @@ classdef MTTSystem
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
             o.dimension_observations = dimension_observations;
-            o.inputfile_parameters.field_separator = inputfile_parameters.field_separator;
+            o.inputfile_parameters = inputfile_parameters;
             o.post_MTT_run_sequence = post_MTT_run_sequence;
             o.post_MTT_run_parameters = post_MTT_run_parameters;
         end
@@ -49,7 +49,7 @@ classdef MTTSystem
                 if ~ischar(line)
                     break;
                 end
-                tokens = strsplit(line, o.field_separator);
+                tokens = strsplit(line, o.inputfile_parameters.field_separator);
                 o = o.run_once(tokens);
             end
         end
@@ -80,7 +80,7 @@ classdef MTTSystem
             % If the number of numeric tokens is not a multiple of dimension_observations and the number of variable columns per 
             % observation then continue on to the next line
             dimension_per_observation_and_info = o.dimension_observations + o.inputfile_parameters.additional_information_num_varcols_perobs;
-            if mod(length(observation_numeric_tokens), dimension_per_observation_and_info) ~= 0
+            if mod(length(observation_and_info_numeric_tokens), dimension_per_observation_and_info) ~= 0
                 return;
             end
             
@@ -107,9 +107,7 @@ classdef MTTSystem
             end
             
             % ---- Now call the MTT's process one observation
-            if sum(sum(observation_matrix)) > 0
-                o.MTT = o.MTT.process_one_observation(time, observations, additional_information);
-            end
+            o.MTT = o.MTT.process_one_observation(time, observations, additional_information);
         end
         
         % run post processing, visualization, and reporting tasks according to the instructions in post_MTT_run_sequence
