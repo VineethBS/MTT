@@ -4,11 +4,20 @@ dt = 0.1;
 
 dimension_observations = 3;
 
+% parameters to be used for processing the input file with additional information
+% the additional information can be independent of the number of observations/detections, such as in the case of
+% pointing information, or it could be dependent on the number of observations/detections, such as in the case of
+% snr. If the additional information is independent then we give the fixed columns in which the information is given
+% If the additional information is dependent on the number of observations we give the number of such variable columns
+% per observation as well as the offsets within each such set of observations + additional information.
 inputfile_parameters.field_separator = ' ';
 inputfile_parameters.time_column = 1;
-inputfile_parameters.observation_column_range = 2:16;
-inputfile_parameters.additional_information = {'snr', 'pointinginformation'};
-inputfile_parameters.additional_information_columns = {17:21, 22:24};
+inputfile_parameters.observation_column_start = 5;
+inputfile_parameters.additional_information_fixedcols = {'pointinginformation'};
+inputfile_parameters.additional_information_fixedcols_columns = {2:4};
+inputfile_parameters.additional_information_varcols = {'snr'};
+inputfile_parameters.additional_information_num_varcols_perobs = 1;
+inputfile_parameters.additional_information_varcols_offsets = {4};
 
 % filter parameters for Kalman Filter
 filter_type = 'kalmanfilter';
