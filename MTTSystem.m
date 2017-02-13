@@ -29,7 +29,7 @@ classdef MTTSystem
             o.MTT = MultiTargetTracker(filter_type, filter_parameters, gating_method_type, gating_method_parameters, ...
                                        data_association_type, data_association_parameters, track_maintenance_type, track_maintenance_parameters);
             o.dimension_observations = dimension_observations;
-            o.inputfileparameters.field_separator = inputfileparameters.field_separator;
+            o.inputfile_parameters.field_separator = inputfile_parameters.field_separator;
             o.post_MTT_run_sequence = post_MTT_run_sequence;
             o.post_MTT_run_parameters = post_MTT_run_parameters;
         end
@@ -65,33 +65,44 @@ classdef MTTSystem
             % ---- Find the time from the line
             time = numeric_tokens(o.inputfile_parameters.time_column);
             
-            % ---- Find all the observations from the line and arrange in an array
-            observation_numeric_tokens = numeric_tokens(o.inputfile_parameters.observation_column_range);
+            % ---- Find additional information which are independent of the number of observations
+            additional_information = [];
+            for i = 1:length(o.inputfile_parameters.additional_information_fixedcols)
+                information_type = o.inputfile_parameters.additional_information_fixedcols{i};
+                if strcmp(information_type, 'pointinginformation')
+                    additional_information.pointing_information = numeric_tokens(o.inputfile_parameters.additional_information_fixedcols_columns{i});
+                end
+            end
             
-            % If the number of numeric tokens is not a multiple of dimension_observations then continue on to the next line
-            if mod(length(observation_numeric_tokens), o.dimension_observations) ~= 0
+            % ---- Find all the observations and additional information from the line and arrange in an array
+            observation_and_info_numeric_tokens = numeric_tokens(o.inputfile_parameters.observation_column_start:end);
+            
+            % If the number of numeric tokens is not a multiple of dimension_observations and the number of variable columns per 
+            % observation then continue on to the next line
+            dimension_per_observation_and_info = o.dimension_observations + o.inputfile_parameters.additional_information_num_varcols_perobs;
+            if mod(length(observation_numeric_tokens), dimension_per_observation_and_info) ~= 0
                 return;
             end
             
-            num_observations = floor(length(observation_numeric_tokens)/o.dimension_observations); % this should be an integer
-            % For example, if the numeric tokens were 10,20,30,10,20,30  the observation matrix should be [10 10; 20 20; 30 30]
-            observation_matrix = reshape(observation_numeric_tokens, o.dimension_observations, num_observations);
+            num_observations = floor(length(observation_and_info_numeric_tokens)/dimension_per_observation_and_info); % this should be an integer
+            % For example, if the numeric tokens were 10,20,SNR1, 30,10, SNR2, 20,30, SNR3  the observation info matrix should be [10 10 SNR1; 20 20 SNR2; 30 30 SNR3]
+            observation_info_matrix = reshape(observation_and_info_numeric_tokens, dimension_per_observation_and_info, num_observations);
             
             % the observations to be fed into MTT should be a cell-array
-            % each observation is a column vector
+            % each observation is a column vector. In the example above, [[10, 10]], [[20, 20]] would be elements of the
+            % observations cell array
             observations = {};
             for i = 1:num_observations
-                observations{i} = observation_matrix(:, i);
+                observations{i} = observation_info_matrix(1:o.dimension_observations, i);
             end
             
-            % ---- Find additional information to be passed
-            additional_information = [];
-            for i = 1:length(o.inputfile_parameters.additional_information)
-                information_type = o.inputfile_parameters.additional_information{i};
+            % ---- Find additional information dependent on number of observations to be passed
+            for i = 1:length(o.inputfile_parameters.additional_information_varcols)
+                information_type = o.inputfile_parameters.additional_information_varcols{i};
                 if strcmp(information_type, 'snr')
-                    additional_information.snr = numeric_tokens(o.inputfile.additional_information_columns{i});
-                elseif strcmp(information_type, 'pointinginformation')
-                    additional_information.pointing_information = numeric_tokens(o.inputfile.additional_information_columns{i});
+                    for j = 1:num_observations
+                        additional_information.snr{j} = observation_info_matrix(o.inputfile_parameters.additional_information_varcols_offsets{i}, j);
+                    end
                 end
             end
             
