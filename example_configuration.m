@@ -64,6 +64,14 @@ track_maintenance_parameters.confirm_M = 5;
 track_maintenance_parameters.confirm_N = 1;
 
 
+track_maintenance_type = 'NOutOfM_FixedNumber';
+track_maintenance_parameters.N = 1;
+track_maintenance_parameters.M = 21;
+track_maintenance_parameters.confirm_threshold = 5;
+track_maintenance_parameters.confirm_M = 5;
+track_maintenance_parameters.confirm_N = 1;
+track_maintenance_parameters.max_number_active_tracks = 10;
+
 postprocessing_parameters.velocity_threshold_parameters.velocity_threshold = [0.00; 0.0;0.00]; 
 postprocessing_parameters.velocity_threshold_parameters.direction = 'greater';
 postprocessing_parameters.atleastN_parameters.N = 100;

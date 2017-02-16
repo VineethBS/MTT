@@ -51,6 +51,8 @@ classdef MultiTargetTracker
             
             if strcmp(o.track_maintenance_type, 'NOutOfM')
                 o.track_maintenance = NOutOfM(track_maintenance_parameters);
+            elseif strcmp(o.track_maintenance_type, 'NOutOfM_FixedNumber')
+                o.track_maintenance = NOutOfM_FixedNumberActiveTracks(track_maintenance_parameters);
             end
         end
         
