@@ -1,4 +1,4 @@
-function o = process_one_observation(o, time, observations, additional_information)
+function o = process_one_observation(o, time, observations)
 % observations: list of observations at a particular time. Each
 % observation could be a vector
 
