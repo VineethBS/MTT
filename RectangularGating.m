@@ -25,22 +25,31 @@ classdef RectangularGating
             if num_of_observations > 0
                 for i = 1:num_of_observations
                     current_observation = observations{i};
-                    for j = 1:num_of_tracks
-                        current_track = list_of_tracks{j};
-                        if strcmp(o.filter_type, 'extendedkalmanfilter')
-                            obs=current_observation - current_track.get_predicted_observation();
-                            r = obs(1);
-                            a = obs(2);
-                            e = obs(3);
+                    if prod(current_observation > 0) %%%% raghava added checks all are non zero 
+                        for j = 1:num_of_tracks
+                            current_track = list_of_tracks{j};
+                            if strcmp(o.filter_type, 'extendedkalmanfilter')
+                                obs=current_observation - current_track.get_predicted_observation();
+                                r = obs(1);
+                                a = obs(2);
+                                e = obs(3);
 
                             [x, y, z] = sph2cart(a,e,r);
                             residue = [x, y, z]';
 
-                        else
-                            residue=current_observation - current_track.get_predicted_observation();
-                        end
-                        if prod(abs(residue) <= o.gate_width/2)
-                            gate_membership_matrix(i, j) = 1;
+                            else
+                                residue=current_observation - current_track.get_predicted_observation();
+                            end
+                            %%%% raghava
+                            if current_track.state ==2 %%%% raghava
+                                gatewidth = o.gate_width/10;
+                            else
+                                gatewidth = o.gate_width/2;
+                            end
+                                if prod(abs(residue) <= gatewidth)
+                                    gate_membership_matrix(i, j) = 1;
+                                end
+
                         end
                     end
                     if sum(gate_membership_matrix(i, :)) == 0
