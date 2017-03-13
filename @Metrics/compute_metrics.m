@@ -52,7 +52,10 @@ while 1
     % arrange the observations at the current time as a matrix
     num_observations = floor(length(numeric_tokens)/o.dimension_observations); % this should be an integer
     observations_matrix = reshape(numeric_tokens, o.dimension_observations, num_observations);
-    
+    %%% raghava remove zero observation
+    observations_matrix(:,~any(observations_matrix,1)) = []; %%%removes columns ie observations with zero
+    observations_matrix(~any(observations_matrix,2),:) = []; %%%removes rows ie if all observations zero
+    %%%%
     index = find(times_from_tracks == time, 1);
     if isempty(index)
         track_observations_matrix = [];
@@ -60,7 +63,50 @@ while 1
         track_observations_matrix = cell2mat(observations_from_tracks{index});
     end
     
+    %%% raghava remove zero observation
+    track_observations_matrix(:,~any(track_observations_matrix,1)) = []; %%%removes columns ie observations with zero
+    track_observations_matrix(~any(track_observations_matrix,2),:) = []; %%%removes rows ie if all observations zero
+    %%%%
+    
     o.time_sequence(end + 1) = time;
+    %%% raghava
+    [~,o.n_intargets(end + 1)] = size(observations_matrix);
+    [~,o.n_outtargets(end + 1)] = size(track_observations_matrix);
+    
+    %%% raghava for finding metric in xyz cordinates
+    if o.dimension_observations ==3
+         if o.convertcordinate == 1
+             
+             for i = 1:o.n_intargets(end)
+                 %%%% [x,y,z] = sph2cart(a,e,r)
+                 [observations_matrix(1,i),observations_matrix(2,i),observations_matrix(3,i)] = sph2cart(observations_matrix(2,i),observations_matrix(3,i),observations_matrix(1,i));
+             end
+             
+             for i = 1:o.n_outtargets(end)
+                 %%%% [x,y,z] = sph2cart(a,e,r)
+                 [track_observations_matrix(1,i),track_observations_matrix(2,i),track_observations_matrix(3,i)] = sph2cart(track_observations_matrix(2,i),track_observations_matrix(3,i),track_observations_matrix(1,i));
+             end
+             
+         end
+    end
+    
+    %%% raghava for finding metric in rae cordinates
+    if o.dimension_observations ==3
+         if o.convertcordinate == 2
+             
+             for i = 1:o.n_intargets(end)
+                 %%%%[a,e,r] = cart2sph(x,y,z);
+                 [observations_matrix(2,i),observations_matrix(3,i),observations_matrix(1,i)] = sph2cart(observations_matrix(1,i),observations_matrix(2,i),observations_matrix(3,i));
+                 %%%%%observations_matrix r a e
+             end
+             
+             for i = 1:o.n_outtargets(end)
+                 %%%%[a,e,r] = cart2sph(x,y,z);
+                 [track_observations_matrix(2,i),track_observations_matrix(3,i),track_observations_matrix(1,i)] = sph2cart(track_observations_matrix(1,i),track_observations_matrix(2,i),track_observations_matrix(3,i));
+             end
+             
+         end
+    end
     if o.compute_ospa
        dist = o.find_ospa_metric(observations_matrix, track_observations_matrix, o.ospa_parameters.c, o.ospa_parameters.p);
        o.ospa_metric(end + 1) = dist;
