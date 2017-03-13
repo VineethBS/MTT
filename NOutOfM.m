@@ -31,27 +31,35 @@ classdef NOutOfM
             num_of_tracks = length(list_of_tracks);
             for i = 1:num_of_tracks
                 current_track = list_of_tracks{i};
+                %take only those times at which the radar points at the
+                %target
+                sequence_times_seen=setdiff(current_track.sequence_times,current_track.sequence_times_notobserved);
+
                 
-                if length(current_track.sequence_times) <= o.confirm_threshold
-                    if length(current_track.sequence_times) <= o.confirm_M
+                if length(sequence_times_seen) <= o.confirm_threshold
+                    if length(sequence_times_seen) <= o.confirm_M
+                        current_track.state = 2; %%%% raghava
                         active_tracks{end + 1} = current_track;
                         continue;
                     end
-                    last_M_start_time = current_track.sequence_times(end - o.confirm_M);
+                    last_M_start_time = sequence_times_seen(end - o.confirm_M);
                     if sum(current_track.sequence_times_observations >= last_M_start_time) >= o.confirm_N
+                        current_track.state = 2; %%%% raghava
                         active_tracks{end + 1} = current_track;
                     end
                     % note that we will completely disregard this track
                     % here and it is not even added to inactive tracks
                 else
-                    if length(current_track.sequence_times) <= o.M
+                    if length(sequence_times_seen) <= o.M
                         active_tracks{end + 1} = current_track;
                         continue;
                     end
-                    last_M_start_time = current_track.sequence_times(end - o.M);
+                    last_M_start_time = sequence_times_seen(end - o.M);
                     if sum(current_track.sequence_times_observations >= last_M_start_time) >= o.N
+                        current_track.state = 2; %%%% raghava
                         active_tracks{end + 1} = current_track;
                     else
+                        current_track.state = 0; %%%% raghava
                         inactive_tracks{end + 1} = current_track;
                     end
                 end
