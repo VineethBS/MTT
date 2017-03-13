@@ -16,6 +16,10 @@ classdef MultiTargetTracker
         
         list_of_tracks;
         list_of_inactive_tracks;
+        
+        additional_information; 
+        observation_snr_limit;
+        observation_pointing_limit;
     end
     
     methods
@@ -32,6 +36,8 @@ classdef MultiTargetTracker
             
             o.list_of_tracks = [];
             o.list_of_inactive_tracks = [];
+            
+            o.additional_information = [];
             
             if strcmp(o.data_association_type, 'GNN')
                 o.data_association = GlobalNearestNeighbour(data_association_parameters);
@@ -62,7 +68,7 @@ classdef MultiTargetTracker
         o = update_and_make_newtracks(o, time, observations, gate_membership_matrix, data_association_matrix);
         o = jpda_update_and_make_newtracks(o, time, observations, gate_membership_matrix, jpda_probability_matrix);
         o = maintain_tracks(o);
-        o = process_one_observation(o, time, observations, additional_information);
-        o = process_multiple_observations(o, list_of_times, list_of_observations, list_of_additional_information);
+        o = process_one_observation(o, time, observations);
+        o = process_multiple_observations(o, list_of_times, list_of_observations);
     end
 end

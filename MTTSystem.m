@@ -32,6 +32,9 @@ classdef MTTSystem
             o.inputfile_parameters = inputfile_parameters;
             o.post_MTT_run_sequence = post_MTT_run_sequence;
             o.post_MTT_run_parameters = post_MTT_run_parameters;
+
+	    o.MTT.observation_snr_limit = observation_snr_limit;
+            o.MTT.observation_pointing_limit = observation_pointing_limit;
         end
         
         % run - simulates the step by step running of the multi targets tracker. It reads the data file line by line. Each line is a
@@ -107,32 +110,45 @@ classdef MTTSystem
             end
             
             % ---- Now call the MTT's process one observation
-            o.MTT = o.MTT.process_one_observation(time, observations, additional_information);
+		o.MTT.additional_information = additional_information;
+                o.MTT = o.MTT.process_one_observation(time, observations);
+
+		% o.MTT = o.MTT.process_one_observation(time, observations, additional_information);
         end
         
         % run post processing, visualization, and reporting tasks according to the instructions in post_MTT_run_sequence
         function o = post_MTT_run(o)
             tracks = [o.MTT.list_of_tracks, o.MTT.list_of_inactive_tracks];
-            for i = 1:length(o.post_MTT_run_sequence)
-                instruction = o.post_MTT_run_sequence{i};
-                if strcmp(instruction, 'atleastN')
-                    temp = PostProcessing(o.post_MTT_run_parameters{i});
-                    tracks = temp.find_tracks_atleast_N_detections(tracks); % tracks change here
-                elseif strcmp(instruction, 'velocitythreshold')
-                    temp = PostProcessing(o.post_MTT_run_parameters{i});
-                    tracks = temp.find_tracks_velocity_threshold(tracks); % tracks change here
-                elseif strcmp(instruction, 'plot1D')
-                    temp = Visualization(o.post_MTT_run_parameters{i});
-                    temp.plot_1D(tracks);
-                elseif strcmp(instruction, 'plot3D')
-                    temp = Visualization(o.post_MTT_run_parameters{i});
-                    temp.plot_3D(tracks);
-                elseif strcmp(instruction, 'savetracks')
-                    temp = Reporting(o.post_MTT_run_parameters{i});
-                    temp.save_tracks(tracks);
-                elseif strcmp(instruction, 'computemetrics')
-                    temp = Metrics(o.post_MTT_run_parameters{i});
-                    temp.compute_metrics(tracks);
+            if(~isempty(tracks))
+                for i = 1:length(o.post_MTT_run_sequence)
+                    instruction = o.post_MTT_run_sequence{i};
+                    if strcmp(instruction, 'atleastN')
+                        temp = PostProcessing(o.post_MTT_run_parameters{i});
+                        tracks = temp.find_tracks_atleast_N_detections(tracks); % tracks change here
+                    elseif strcmp(instruction, 'velocitythreshold')
+                        if(~isempty(tracks))
+                            temp = PostProcessing(o.post_MTT_run_parameters{i});
+                            tracks = temp.find_tracks_velocity_threshold(tracks); % tracks change here
+                        end
+                    elseif strcmp(instruction, 'plot1D')
+                        if(~isempty(tracks))
+                            temp = Visualization(o.post_MTT_run_parameters{i});
+                            temp.plot_1D(tracks);
+                        end
+                    elseif strcmp(instruction, 'plot3D')
+                        temp = Visualization(o.post_MTT_run_parameters{i});
+                        temp.plot_3D(tracks);
+                    elseif strcmp(instruction, 'savetracks')
+                        if(~isempty(tracks))
+                            temp = Reporting(o.post_MTT_run_parameters{i});
+                            temp.save_tracks(tracks);
+                        end
+                    elseif strcmp(instruction, 'computemetrics')
+                        if(~isempty(tracks))
+                            temp = Metrics(o.post_MTT_run_parameters{i});
+                            temp.compute_metrics(tracks);
+                        end
+                    end
                 end
             end
         end
