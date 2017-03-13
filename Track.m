@@ -10,6 +10,8 @@ classdef Track
         sequence_times; % all the time instants during which this track is active
         sequence_predicted_observations; % the observations predicted by the internal state
         sequence_updated_state;% filtered output values
+        state;% to determine is early stage or inactive or active
+        sequence_times_not_observed; % to determine whether the radar was pointed somewhere else
     end
     
     methods
@@ -35,6 +37,8 @@ classdef Track
             o.sequence_observations = {};
             o.sequence_times = [];
             o.sequence_predicted_observations = {};
+            o.state = 1; %%%% 0 for inactive 1 for early stage 2 for active
+            o.sequence_times_notobserved = [];
         end
         
         function o = predict(o)
@@ -66,12 +70,17 @@ classdef Track
             o.filter = o.filter.update(time, observation);
         end
         
+        function o = update_with_noobservation(o, time, observation)
+            o.filter = o.filter.update_with_noobservation(time);
+        end
+        
         function o = update_with_multiple_observations(o, time, observations, observation_probability, probability_no_assoc_observation)
             o.filter = o.filter.update_with_multiple_observations(time, observations, observation_probability, probability_no_assoc_observation);
         end
         
         function o = split_track(o)
             o.sequence_times_observations = [];
+            o.sequence_updated_state = [];%%% added raghava
             o.sequence_observations = {};
             o.sequence_times = [];
             o.sequence_predicted_observations = {};
@@ -93,6 +102,11 @@ classdef Track
            
             o.sequence_updated_state{end + 1} = o.get_observation();
         end
+        
+        %%%% added raghava
+         function o = record_notobserved_times(o, time)
+            o.sequence_times_notobserved = [o.sequence_times_notobserved, time];         
+         end
     end
 end
 
